@@ -1,9 +1,24 @@
 account_id: ""
 actions:
-  namaskar_1f64f/arbor-finance:
+  multisiglabs/gogopool:
     runtime: v2
     sources: src/actions
     specs:
+      minipoolFuji:
+        description: A minipool's status changed.
+        function: minipool:minipoolStatusChange
+        trigger:
+          type: transaction
+          transaction:
+            filters:
+              - eventEmitted:
+                  contract:
+                    address: 0xD28DB337F7D7FEFe5C257D337484c3f34545c933
+                  name: MinipoolStatusChanged
+                status: success
+                network: 43113
+            status:
+              - mined
       minipool:
         description: A minipool's status changed.
         function: minipool:minipoolStatusChange

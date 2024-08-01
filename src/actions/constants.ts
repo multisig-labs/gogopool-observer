@@ -21,7 +21,7 @@ export const isDev = process.env.NODE_ENV === "development";
 export const TENDERLY_PROJECT_SLUG = "arbor-finance";
 export const TENDERLY_USERNAME = "namaskar_1f64f";
 export const JSON_RPC_URL_SECRET_NAME = "JSON_RPC_URL";
-export const DISCORD_WEBHOOK_URL_SECRET_NAME = "STRAWBERRY_WEBHOOK_URL";
+export const DISCORD_WEBHOOK_URL_SECRET_NAME = "PROD_WEBHOOK_URL";
 export const DATABASE_WEBHOOK_URL_SECRET_NAME = "DATABASE_WEBHOOK_URL";
 export const DATABASE_URI_SECRET_NAME = "DATABASE_URI";
 export const DATABASE_NAME_SECRET_NAME = "DATABASE_NAME";
