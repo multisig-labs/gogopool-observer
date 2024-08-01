@@ -21,8 +21,9 @@ export class DiscordWebhookClient extends Client {
   async sendMessage(message: WebhookMessageCreateOptions) {
     if (!this._webhookClient) {
       throw new Error("Webhook client not initialized");
+    } else if (message) {
+      await this._webhookClient.send(message);
     }
-    await this._webhookClient.send(message);
   }
 }
 

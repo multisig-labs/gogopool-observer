@@ -3,7 +3,7 @@ import { BigNumber, ethers } from "ethers";
 import { BinTools } from "avalanche";
 import { Buffer } from "buffer/"; // note: the slash is important!
 import ms from "ms";
-import { Context } from "@tenderly/actions";
+import { Context, Network } from "@tenderly/actions";
 import { discordClient } from "./discord";
 import { knockClient } from "./knock";
 import { jsonRpcProvider } from "./ethers";
@@ -14,9 +14,12 @@ import {
   DISCORD_WEBHOOK_URL_SECRET_NAME,
   JSON_RPC_URL_SECRET_NAME,
   KNOCK_TOKEN_SECRET_NAME,
+  WEBHOOK_URL_FUJI_SECRET_NAME,
+  WEBHOOK_URL_SECRET_NAME,
 } from "./constants";
 import { databaseClient } from "./database";
 import { emitter } from "./emitter";
+import { webhookClient } from "./webhook";
 
 const bintools = BinTools.getInstance();
 
@@ -127,6 +130,11 @@ export const initServices = async (context: Context) => {
   jsonRpcProvider.init(await context.secrets.get(JSON_RPC_URL_SECRET_NAME));
   discordClient.init(
     await context.secrets.get(DISCORD_WEBHOOK_URL_SECRET_NAME)
+  );
+  webhookClient.init(
+    context.metadata.getNetwork() === Network.FUJI
+      ? await context.secrets.get(WEBHOOK_URL_FUJI_SECRET_NAME)
+      : await context.secrets.get(WEBHOOK_URL_SECRET_NAME)
   );
   emitter.addClient(discordClient);
   await databaseClient.init(

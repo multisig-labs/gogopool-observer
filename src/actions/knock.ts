@@ -20,7 +20,7 @@ export class KnockClient extends Client {
     return this._knockClient;
   }
 
-  async sendMessage(message: WebhookMessageCreateOptions, workflowData?: any) {
+  async sendMessage(_message: WebhookMessageCreateOptions, workflowData?: any) {
     console.log("workflowData", workflowData);
     if (!this._knockClient) {
       throw new Error("Knock client not initialized");

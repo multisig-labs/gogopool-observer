@@ -228,6 +228,11 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
   if (!message) {
     throw new Error("message not found");
   }
-  await emitter.emit(message, workflowData);
+  await emitter.emit(message, workflowData, {
+    nodeID,
+    status: statusChangedEvents[0].status.toNumber(),
+    duration: duration.toNumber(),
+    startDate: startTime.toString(),
+  });
 };
 
