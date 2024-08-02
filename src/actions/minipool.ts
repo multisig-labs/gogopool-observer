@@ -1,6 +1,7 @@
-import { Context, Event, TransactionEvent } from "@tenderly/actions";
+import { Context, Event, Network, TransactionEvent } from "@tenderly/actions";
 import {
   MINIPOOL_MANAGER_ADDRESS,
+  MINIPOOL_MANAGER_ADDRESS_FUJI,
   MINIPOOL_MANAGER_INTERFACE,
   MINIPOOL_STREAMLINER_INTERFACE,
 } from "./constants";
@@ -30,10 +31,11 @@ import { emitter } from "./emitter";
 import { BigNumber } from "ethers";
 
 export const getMinipoolDataFromNodeId = async (
-  nodeID: string
+  nodeID: string,
+  network?: Network
 ): Promise<Minipool> => {
   const minipoolCallResult = await jsonRpcProvider.getProvider().call({
-    to: MINIPOOL_MANAGER_ADDRESS,
+    to: network === Network.FUJI ? MINIPOOL_MANAGER_ADDRESS_FUJI : MINIPOOL_MANAGER_ADDRESS,
     data: MINIPOOL_MANAGER_INTERFACE.encodeFunctionData("getMinipoolByNodeID", [
       nodeID,
     ]),
@@ -172,7 +174,7 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
   const nodeID = statusChangedEvents[0].nodeID;
   console.info(`Processing minipool for nodeID: ${nodeID}`);
 
-  const minipool = await getMinipoolDataFromNodeId(nodeID);
+  const minipool = await getMinipoolDataFromNodeId(nodeID, context.metadata.getNetwork());
   console.debug("Minipool data retrieved", { minipool });
 
   const { owner, duration, startTime } = minipool;

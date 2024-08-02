@@ -20,16 +20,20 @@ export class WebhookClient extends Client {
     _workflowData?: any,
     body?: any
   ) {
+    console.log("sendMessage");
     if (!this._webhookUrl) {
       throw new Error("Webhook client not initialized");
     } else if (body) {
-      await fetch(this._webhookUrl, {
+      console.log("sendMessage", this._webhookUrl);
+      const respo = await fetch(this._webhookUrl, {
         method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
         body: JSON.stringify(body),
       });
+
+      console.log("sendMessage", respo.status);
     }
   }
 }
