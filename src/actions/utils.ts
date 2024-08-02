@@ -9,6 +9,7 @@ import { knockClient } from "./knock";
 import { jsonRpcProvider } from "./ethers";
 import {
   DISCORD_WEBHOOK_URL_SECRET_NAME,
+  JSON_RPC_URL_FUJI_SECRET_NAME,
   JSON_RPC_URL_SECRET_NAME,
   KNOCK_TOKEN_SECRET_NAME,
   WEBHOOK_URL_FUJI_SECRET_NAME,
@@ -123,15 +124,16 @@ export const sanitizeNumbers = (input: string): string => {
 };
 
 export const initServices = async (context: Context) => {
+  const isFuji = context.metadata.getNetwork() === Network.FUJI;
   console.log("initServices");
-  jsonRpcProvider.init(await context.secrets.get(JSON_RPC_URL_SECRET_NAME));
+  jsonRpcProvider.init(isFuji ? await context.secrets.get(JSON_RPC_URL_FUJI_SECRET_NAME) : await context.secrets.get(JSON_RPC_URL_SECRET_NAME));
   discordClient.init(
     await context.secrets.get(DISCORD_WEBHOOK_URL_SECRET_NAME)
   );
   emitter.addClient(discordClient);
   console.log(context.metadata.getNetwork());
   webhookClient.init(
-    context.metadata.getNetwork() === Network.FUJI
+    isFuji
       ? await context.secrets.get(WEBHOOK_URL_FUJI_SECRET_NAME)
       : await context.secrets.get(WEBHOOK_URL_SECRET_NAME)
   );
