@@ -230,11 +230,8 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
   }
   await emitter.emit(message, workflowData, {
     nodeID,
-    status:
-      statusChangedEvents[0].status?.toNumber() ||
-      statusChangedEvents[0].status,
-    duration: duration?.toNumber() || duration,
-    startDate: startTime?.toString() || startTime,
+    status: statusChangedEvents[0].status.toString(),
+    duration: duration.toString(),
+    startDate: startTime.toString(),
   });
 };
-
