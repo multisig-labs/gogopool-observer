@@ -8,16 +8,12 @@ import { discordClient } from "./discord";
 import { knockClient } from "./knock";
 import { jsonRpcProvider } from "./ethers";
 import {
-  DATABASE_COLLECTION_SECRET_NAME,
-  DATABASE_NAME_SECRET_NAME,
-  DATABASE_URI_SECRET_NAME,
   DISCORD_WEBHOOK_URL_SECRET_NAME,
   JSON_RPC_URL_SECRET_NAME,
   KNOCK_TOKEN_SECRET_NAME,
   WEBHOOK_URL_FUJI_SECRET_NAME,
   WEBHOOK_URL_SECRET_NAME,
 } from "./constants";
-import { databaseClient } from "./database";
 import { emitter } from "./emitter";
 import { webhookClient } from "./webhook";
 
@@ -137,12 +133,6 @@ export const initServices = async (context: Context) => {
       : await context.secrets.get(WEBHOOK_URL_SECRET_NAME)
   );
   emitter.addClient(discordClient);
-  await databaseClient.init(
-    await context.secrets.get(DATABASE_URI_SECRET_NAME),
-    await context.secrets.get(DATABASE_NAME_SECRET_NAME),
-    await context.secrets.get(DATABASE_COLLECTION_SECRET_NAME)
-  );
-  emitter.addClient(databaseClient);
   knockClient.init(await context.secrets.get(KNOCK_TOKEN_SECRET_NAME));
   emitter.addClient(knockClient);
 };
