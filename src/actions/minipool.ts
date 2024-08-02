@@ -152,6 +152,7 @@ const getMessageFromStatusChangedEvent = async (
 };
 
 export const minipoolStatusChange = async (context: Context, event: Event) => {
+  console.info("Starting minipoolStatusChange function");
   await initServices(context);
   const transactionEvent = event as TransactionEvent;
 
@@ -160,15 +161,23 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
     MINIPOOL_MANAGER_INTERFACE,
     "MinipoolStatusChanged"
   );
+  console.info(`Found ${statusChangedEvents.length} MinipoolStatusChanged events`);
+
   let message;
   let workflowData;
   if (statusChangedEvents.length === 0) {
+    console.error("No MinipoolStatusChanged events found");
     throw new Error("status event not found");
   }
   const nodeID = statusChangedEvents[0].nodeID;
+  console.info(`Processing minipool for nodeID: ${nodeID}`);
+
   const minipool = await getMinipoolDataFromNodeId(nodeID);
+  console.debug("Minipool data retrieved", { minipool });
+
   const { owner, duration, startTime } = minipool;
   if (statusChangedEvents.length === 1) {
+    console.info("Processing single MinipoolStatusChanged event");
     const streamlinedMinipoolMadeEvent =
       getMatchingEvents<NewStreamlinedMinipoolMade>(
         transactionEvent,
@@ -176,6 +185,7 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
         "NewStreamlinedMinipoolMade"
       );
     if (streamlinedMinipoolMadeEvent?.length > 0) {
+      console.info("Processing streamlined minipool event");
       message = await getMessageFromStatusChangedEvent(
         statusChangedEvents[0],
         transactionEvent,
@@ -197,15 +207,19 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
         hardwareProviderContract:
           streamlinedMinipoolMadeEvent[0]?.hardwareProviderContract,
       };
+      console.debug("Workflow data prepared", { workflowData });
+
       const slackMessage = await SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE(
         workflowData
       );
+      console.info("Slack message prepared for streamlined minipool");
 
       workflowData = {
         ...slackMessage,
         ...workflowData,
       };
     } else {
+      console.info("Processing regular minipool status change");
       message = await getMessageFromStatusChangedEvent(
         statusChangedEvents[0],
         transactionEvent,
@@ -215,7 +229,7 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
       );
     }
   } else {
-    // Only special case I know now is restake
+    console.info("Processing multiple MinipoolStatusChanged events (likely restake)");
     message = await getMessageFromStatusChangedEvent(
       statusChangedEvents[1],
       transactionEvent,
@@ -226,12 +240,18 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
     );
   }
   if (!message) {
+    console.error("Failed to generate message");
     throw new Error("message not found");
   }
+  console.info("Emitting message", { nodeID, status: statusChangedEvents[0].status.toString() });
   await emitter.emit(message, workflowData, {
     nodeID,
-    status: statusChangedEvents[0].status.toString(),
+    status:
+      statusChangedEvents.length === 1
+        ? statusChangedEvents[0].status.toString()
+        : MinipoolStatus.RESTAKE,
     duration: duration.toString(),
     startDate: startTime.toString(),
   });
+  console.info("minipoolStatusChange function completed successfully");
 };

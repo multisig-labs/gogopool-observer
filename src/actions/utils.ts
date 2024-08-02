@@ -123,16 +123,19 @@ export const sanitizeNumbers = (input: string): string => {
 };
 
 export const initServices = async (context: Context) => {
+  console.log("initServices");
   jsonRpcProvider.init(await context.secrets.get(JSON_RPC_URL_SECRET_NAME));
   discordClient.init(
     await context.secrets.get(DISCORD_WEBHOOK_URL_SECRET_NAME)
   );
+  emitter.addClient(discordClient);
+  console.log(context.metadata.getNetwork());
   webhookClient.init(
     context.metadata.getNetwork() === Network.FUJI
       ? await context.secrets.get(WEBHOOK_URL_FUJI_SECRET_NAME)
       : await context.secrets.get(WEBHOOK_URL_SECRET_NAME)
   );
-  emitter.addClient(discordClient);
+  emitter.addClient(webhookClient);
   knockClient.init(await context.secrets.get(KNOCK_TOKEN_SECRET_NAME));
   emitter.addClient(knockClient);
 };
