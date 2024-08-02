@@ -63,6 +63,14 @@ export interface TargetAPRUpdated extends Event {
   newTargetAPR: BigNumber;
 }
 
+export interface HardwareRented extends Event {
+  user: string;
+  nodeID: string;
+  hardwareProviderName: string;
+  duration: BigNumber;
+  payment: BigNumber;
+}
+
 export interface WithdrawnForStaking extends Event {
   caller: string;
   assets: BigNumber;

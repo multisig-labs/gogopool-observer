@@ -1,7 +1,7 @@
 import { WebhookMessageCreateOptions } from "discord.js";
 
 export abstract class Client {
-  abstract sendMessage(message: WebhookMessageCreateOptions, workflowData?: any, body?: any): Promise<void>;
+  abstract sendMessage(message?: WebhookMessageCreateOptions, workflowData?: any, body?: any): Promise<void>;
   abstract clientId: string; // This should be a unique id to identify the client
 }
 
@@ -19,7 +19,7 @@ export class Emitter {
     this._clients.set(client.clientId, client);
   }
 
-  async emit(message: WebhookMessageCreateOptions, workflowData?: any, body?: any) {
+  async emit(message?: WebhookMessageCreateOptions, workflowData?: any, body?: any) {
     const messagePromises = Array.from(this._clients.values()).map((client) =>
       client.sendMessage(message, workflowData, body)
     );

@@ -15,6 +15,7 @@ import { abi as VaultAbi } from "./abis/vault";
 import { abi as WAVAXAbi } from "./abis/wavax";
 import { abi as MinipoolStreamlinerAbi } from "./abis/minipoolStreamliner";
 import { abi as GGPVaultAbi } from "./abis/ggpvault";
+import { abi as HardwareProviderAbi } from "./abis/artifactHardwareProvider";
 
 export const isDev = process.env.NODE_ENV === "development";
 
@@ -53,7 +54,8 @@ export const CLAIM_NODE_OP_ADDRESS =
 export const CLAIM_PROTOCOL_DAO_ADDRESS =
   "0x4169CF88c7Ed811E6f6e61917c5b915BeA49476c";
 export const MINIPOOL_MANAGER_ADDRESS = "0x17395Ad76b236FABeaC3634b78fF8F6970222199";
-export const MINIPOOL_MANAGER_ADDRESS_FUJI = "0xD28DB337F7D7FEFe5C257D337484c3f34545c933";
+export const MINIPOOL_MANAGER_ADDRESS_FUJI =
+  "0x4C4B2663ad02E6A25ee96CCC15cd5eca1A8407cf";
 export const MULTISIG_MANAGER_ADDRESS =
   "0x7fff419c562Dd8b3cf16C335a01CDb37ea1B6a3B";
 export const OCYTICUS_ADDRESS = "0x9189d18F453b1Ec1F02E40A8e3711334f9eA210B";
@@ -70,6 +72,9 @@ export const TOKENGG_AVAX_ADDRESS =
   "0xA25EaF2906FA1a3a13EdAc9B9657108Af7B703e3";
 export const WAVAX_ADDRESS = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
 export const MINIPOOL_STREAMLINER = "0x8C05D78066431C3b11bBFB6f3546fD3F1396115C";
+export const MINIPOOL_STREAMLINER_FUJI = "0xA812fB22170501ecf7d45d588700789BB6DBA0Ab";
+export const ARTIFACT_HARDWARE_PROVIDER_FUJI =
+  "0x1647e8a372FA79d09b23aBF28a26C34531e33F3A";
 
 export const CLAIM_NODE_OP_INTERFACE = new utils.Interface(ClaimNodeOpAbi);
 export const CLAIM_PROTOCOL_DAO_INTERFACE = new utils.Interface(
@@ -95,3 +100,4 @@ export const MINIPOOL_STREAMLINER_INTERFACE = new utils.Interface(
   MinipoolStreamlinerAbi
 );
 export const GGP_VAULT_INTERFACE = new utils.Interface(GGPVaultAbi);
+export const HARDWARE_PROVIDER_INTERFACE = new utils.Interface(HardwareProviderAbi);

@@ -1124,3 +1124,89 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
   };
 };
 
+export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
+  transactionHash,
+  user,
+  nodeID,
+  hardwareProviderName,
+  duration,
+  payment,
+}: {
+  transactionHash: string;
+  user: string;
+  nodeID: string;
+  hardwareProviderName: string;
+  duration: string;
+  payment: string;
+}) => {
+  const displayDuration = Math.floor(parseInt(duration) / 86400);
+  return {
+    blocks: [
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: ":computer: Hardware Rented",
+          emoji: true,
+        },
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `*Duration:* ${displayDuration} days`,
+          },
+          {
+            type: "mrkdwn",
+            text: "|",
+          },
+          {
+            type: "mrkdwn",
+            text: `*Payment:* ${payment} AVAX`,
+          },
+        ],
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":snowman: Transaction",
+            },
+            url: `https://testnet.snowscan.xyz/tx/${transactionHash}`,
+            action_id: "transaction-hash-link",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":bust_in_silhouette: User",
+            },
+            url: `https://testnet.snowscan.xyz/address/${user}`,
+            action_id: "user-link",
+          },
+        ],
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Node ID:* \`${nodeID}\``,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Hardware Provider:* ${hardwareProviderName}`,
+        },
+      },
+    ],
+  };
+};
+

@@ -137,7 +137,7 @@ export const initServices = async (context: Context) => {
       ? await context.secrets.get(WEBHOOK_URL_FUJI_SECRET_NAME)
       : await context.secrets.get(WEBHOOK_URL_SECRET_NAME)
   );
-  emitter.addClient(webhookClient);
+  emitter.addClient(webhookClient);//
   knockClient.init(await context.secrets.get(KNOCK_TOKEN_SECRET_NAME));
   emitter.addClient(knockClient);
 };

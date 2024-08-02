@@ -4,6 +4,21 @@ actions:
     runtime: v2
     sources: src/actions
     specs:
+      artifactHardwareProvider:
+        description: Artifact hardware provider changed.
+        function: artifact:hardwareRented
+        trigger:
+          type: transaction
+          transaction:
+            filters:
+              - network: 43113
+                eventEmitted:
+                  contract:
+                    address: 0x1647e8a372FA79d09b23aBF28a26C34531e33F3A
+                  name: HardwareRented
+                status: success
+            status:
+              - mined
       minipoolFuji:
         description: A minipool's status changed.
         function: minipool:minipoolStatusChange

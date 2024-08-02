@@ -4,6 +4,7 @@ import {
   TOKEN_GGAVAX_INTERFACE,
   STAKING_INTERFACE,
   GGP_VAULT_INTERFACE,
+  HARDWARE_PROVIDER_INTERFACE,
 } from "./constants";
 import {
   DepositedFromStaking,
@@ -12,6 +13,7 @@ import {
   GGPCapUpdated,
   GGPStaked,
   GGPWithdrawn,
+  HardwareRented,
   RewardsDistributed,
   TargetAPRUpdated,
   WithdrawnForStaking,
@@ -108,6 +110,16 @@ export const getGgAvaxDepositEvent = async (
   } catch (e) {
     return;
   }
+};
+
+export const getHardwareRentedEvent = async (
+  transactionEvent: TransactionEvent
+): Promise<HardwareRented | undefined> => {
+  return await getMatchingEvent<HardwareRented>(
+    transactionEvent,
+    HARDWARE_PROVIDER_INTERFACE,
+    "HardwareRented"
+  );
 };
 
 /*

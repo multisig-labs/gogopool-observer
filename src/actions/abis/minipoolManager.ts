@@ -208,6 +208,25 @@ export const abi = [
         type: "address",
       },
       {
+        indexed: false,
+        internalType: "bytes32",
+        name: "hardwareProvider",
+        type: "bytes32",
+      },
+    ],
+    name: "MinipoolLaunched",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "nodeID",
+        type: "address",
+      },
+      {
         indexed: true,
         internalType: "enum MinipoolStatus",
         name: "status",
@@ -345,6 +364,11 @@ export const abi = [
         name: "blsPubkeyAndSig",
         type: "bytes",
       },
+      {
+        internalType: "bytes32",
+        name: "hardwareProvider",
+        type: "bytes32",
+      },
     ],
     name: "createMinipool",
     outputs: [],
@@ -382,6 +406,11 @@ export const abi = [
         internalType: "bytes",
         name: "blsPubkeyAndSig",
         type: "bytes",
+      },
+      {
+        internalType: "bytes32",
+        name: "hardwareProvider",
+        type: "bytes32",
       },
     ],
     name: "createMinipoolOnBehalfOf",
@@ -567,6 +596,11 @@ export const abi = [
             name: "avaxLiquidStakerRewardAmt",
             type: "uint256",
           },
+          {
+            internalType: "bytes32",
+            name: "hardwareProvider",
+            type: "bytes32",
+          },
         ],
         internalType: "struct MinipoolManager.Minipool",
         name: "mp",
@@ -692,6 +726,11 @@ export const abi = [
             internalType: "uint256",
             name: "avaxLiquidStakerRewardAmt",
             type: "uint256",
+          },
+          {
+            internalType: "bytes32",
+            name: "hardwareProvider",
+            type: "bytes32",
           },
         ],
         internalType: "struct MinipoolManager.Minipool",
@@ -841,6 +880,11 @@ export const abi = [
             internalType: "uint256",
             name: "avaxLiquidStakerRewardAmt",
             type: "uint256",
+          },
+          {
+            internalType: "bytes32",
+            name: "hardwareProvider",
+            type: "bytes32",
           },
         ],
         internalType: "struct MinipoolManager.Minipool[]",
@@ -1064,10 +1108,15 @@ export const abi = [
         name: "duration",
         type: "uint256",
       },
+      {
+        internalType: "bytes32",
+        name: "hardwareProvider",
+        type: "bytes32",
+      },
     ],
     name: "withdrawRewardsAndRelaunchMinipool",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
-] as const
+] as const;
