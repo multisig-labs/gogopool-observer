@@ -15,7 +15,6 @@ import {
   MINIPOOL_STAKING_TEMPLATE,
   MINIPOOL_STREAMLINE_TEMPLATE,
   MINIPOOL_WITHDRAWABLE_TEMPLATE,
-  SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE,
 } from "./templates";
 import { getMatchingEvents } from "./logParsing";
 import {
@@ -26,7 +25,7 @@ import {
 } from "./types";
 import { jsonRpcProvider } from "./ethers";
 import { WebhookMessageCreateOptions } from "discord.js";
-import { decodeBLSKeys, initServices, nodeHexToID } from "./utils";
+import { initServices } from "./utils";
 import { emitter } from "./emitter";
 import { BigNumber } from "ethers";
 
