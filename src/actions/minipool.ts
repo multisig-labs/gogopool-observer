@@ -196,30 +196,30 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
         owner,
         MinipoolStatus.STREAMLINE_PRELAUNCH
       );
-      const { pubKey, sig } = decodeBLSKeys(minipool.blsPubkeyAndSig);
-      workflowData = {
-        transactionHash: transactionEvent.hash,
-        blsKey: pubKey,
-        blsSig: sig,
-        nodeID: nodeHexToID(minipool.nodeID),
-        nodeIDHex: minipool.nodeID,
-        duration: duration.toString(),
-        startTime: startTime.toString(),
-        owner: minipool.owner,
-        hardwareProviderContract:
-          streamlinedMinipoolMadeEvent[0]?.hardwareProviderContract,
-      };
-      console.debug("Workflow data prepared", { workflowData });
+      // const { pubKey, sig } = decodeBLSKeys(minipool.blsPubkeyAndSig);
+      // workflowData = {
+      //   transactionHash: transactionEvent.hash,
+      //   blsKey: pubKey,
+      //   blsSig: sig,
+      //   nodeID: nodeHexToID(minipool.nodeID),
+      //   nodeIDHex: minipool.nodeID,
+      //   duration: duration.toString(),
+      //   startTime: startTime.toString(),
+      //   owner: minipool.owner,
+      //   hardwareProviderContract:
+      //     streamlinedMinipoolMadeEvent[0]?.hardwareProviderContract,
+      // };
+      // console.debug("Workflow data prepared", { workflowData });
 
-      const slackMessage = await SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE(
-        workflowData
-      );
-      console.info("Slack message prepared for streamlined minipool");
+      // const slackMessage = await SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE(
+      //   workflowData
+      // );
+      // console.info("Slack message prepared for streamlined minipool");
 
-      workflowData = {
-        ...slackMessage,
-        ...workflowData,
-      };
+      // workflowData = {
+      //   ...slackMessage,
+      //   ...workflowData,
+      // };
     } else {
       console.info("Processing regular minipool status change");
       message = await getMessageFromStatusChangedEvent(
