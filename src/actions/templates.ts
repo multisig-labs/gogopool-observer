@@ -8,7 +8,7 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import { BigNumber, utils } from "ethers";
-import { getOrdinalDisplay, nodeHexToID, nodeID } from "./utils";
+import { getOrdinalDisplay, nodeHexToID } from "./utils";
 import { RewardsInformation, XGGPDeposit } from "./types";
 import { getEmojiAddress, getEmojiNodeId } from "./addresses";
 
