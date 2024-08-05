@@ -1,10 +1,11 @@
 import { Log, TransactionEvent } from "@tenderly/actions";
 import { Interface } from "ethers/lib/utils";
 import {
-  TOKEN_GGAVAX_INTERFACE,
-  STAKING_INTERFACE,
   GGP_VAULT_INTERFACE,
   HARDWARE_PROVIDER_INTERFACE,
+  MINIPOOL_MANAGER_INTERFACE,
+  STAKING_INTERFACE,
+  TOKEN_GGAVAX_INTERFACE,
 } from "./constants";
 import {
   DepositedFromStaking,
@@ -14,6 +15,7 @@ import {
   GGPStaked,
   GGPWithdrawn,
   HardwareRented,
+  MinipoolLaunched,
   RewardsDistributed,
   TargetAPRUpdated,
   WithdrawnForStaking,
@@ -119,6 +121,16 @@ export const getHardwareRentedEvent = async (
     transactionEvent,
     HARDWARE_PROVIDER_INTERFACE,
     "HardwareRented"
+  );
+};
+
+export const getMinipoolLaunchedEvent = async (
+  transactionEvent: TransactionEvent
+): Promise<MinipoolLaunched | undefined> => {
+  return await getMatchingEvent<MinipoolLaunched>(
+    transactionEvent,
+    MINIPOOL_MANAGER_INTERFACE,
+    "MinipoolLaunched"
   );
 };
 

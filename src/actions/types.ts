@@ -71,6 +71,11 @@ export interface HardwareRented extends Event {
   payment: BigNumber;
 }
 
+export interface MinipoolLaunched extends Event {
+  nodeID: string;
+  hardwareProvider: string;
+}
+
 export interface WithdrawnForStaking extends Event {
   caller: string;
   assets: BigNumber;

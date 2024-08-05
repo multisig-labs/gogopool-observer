@@ -8,7 +8,7 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import { BigNumber, utils } from "ethers";
-import { getOrdinalDisplay, nodeHexToID } from "./utils";
+import { getOrdinalDisplay, nodeHexToID, nodeID } from "./utils";
 import { RewardsInformation, XGGPDeposit } from "./types";
 import { getEmojiAddress, getEmojiNodeId } from "./addresses";
 
@@ -1096,7 +1096,7 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
           type: "mrkdwn",
           text: `${nodeID} \`hex:${nodeIDHex}\``,
         },
-      },//
+      }, //
       {
         type: "divider",
       },
@@ -1210,3 +1210,47 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
   };
 };
 
+export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
+  transactionHash,
+  nodeID,
+  hardwareProviderName,
+  owner,
+}: {
+  owner: string;
+  transactionHash: string;
+  nodeID: string;
+  hardwareProviderName: string;
+}) => {
+  return {
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Transaction Hash:* ${transactionHash}`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Owner:* ${owner}`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Node ID:* ${nodeID}`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Hardware Provider:* ${hardwareProviderName}`,
+        },
+      },
+    ],
+  };
+};
