@@ -36,7 +36,7 @@ actions:
               - mined
       minipoolLaunch:
         description: A minipool's status changed.
-        function: minipool:minipoolStatusChange
+        function: minipoolLaunch:minipoolLaunched
         trigger:
           type: transaction
           transaction:
