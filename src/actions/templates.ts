@@ -1224,24 +1224,53 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
   return {
     blocks: [
       {
-        type: "section",
+        type: "header",
         text: {
-          type: "mrkdwn",
-          text: `*Transaction Hash:* ${transactionHash}`,
+          type: "plain_text",
+          text: ":rocket: Minipool Launched",
+          emoji: true,
         },
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":snowman: Transaction",
+            },
+            url: `https://snowscan.xyz/tx/${transactionHash}`,
+            action_id: "transaction-hash-link",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":bust_in_silhouette: Owner",
+            },
+            url: `https://snowscan.xyz/address/${owner}`,
+            action_id: "owner-link",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":closed_umbrella: Validator",
+            },
+            url: `https://avascan.info/staking/validator/${nodeID}`,
+            action_id: "node-id-link",
+          },
+        ],
       },
       {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Owner:* ${owner}`,
-        },
-      },
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*Node ID:* ${nodeID}`,
+          text: `*Node ID:* \`${nodeID}\``,
         },
       },
       {

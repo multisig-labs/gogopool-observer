@@ -166,6 +166,7 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
 
   let message;
   let workflowData;
+  let webhookData;
   if (statusChangedEvents.length === 0) {
     console.error("No MinipoolStatusChanged events found");
     throw new Error("status event not found");
@@ -205,7 +206,13 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
         owner
       );
     }
-  } else {
+    webhookData = {
+      nodeID,
+      status: statusChangedEvents[0].status.toString(),
+      duration: duration.toString(),
+      startDate: startTime.toString(),
+    };
+  } else if (statusChangedEvents.length === 3) {
     console.info("Processing multiple MinipoolStatusChanged events (likely restake)");
     message = await getMessageFromStatusChangedEvent(
       statusChangedEvents[1],
@@ -215,20 +222,34 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
       owner,
       MinipoolStatus.RESTAKE
     );
+    webhookData = {
+      nodeID,
+      status: MinipoolStatus.LAUNCH,
+      duration: duration.toString(),
+      startDate: startTime.toString(),
+    };
+  } else if (statusChangedEvents.length === 2) {
+    console.info("Processing two MinipoolStatusChanged events (likely relaunch)");
+    message = await getMessageFromStatusChangedEvent(
+      statusChangedEvents[0],
+      transactionEvent,
+      duration,
+      startTime,
+      owner,
+      MinipoolStatus.PRELAUNCH
+    );
+    webhookData = {
+      nodeID,
+      status: MinipoolStatus.PRELAUNCH,
+      duration: duration.toString(),
+      startDate: startTime.toString(),
+    };
   }
   if (!message) {
     console.error("Failed to generate message");
     throw new Error("message not found");
   }
   console.info("Emitting message", { nodeID, status: statusChangedEvents[0].status.toString() });
-  await emitter.emit(message, workflowData, {
-    nodeID,
-    status:
-      statusChangedEvents.length === 1
-        ? statusChangedEvents[0].status.toString()
-        : MinipoolStatus.LAUNCH,
-    duration: duration.toString(),
-    startDate: startTime.toString(),
-  });
+  await emitter.emit(message, workflowData, webhookData);
   console.info("minipoolStatusChange function completed successfully");
 };
