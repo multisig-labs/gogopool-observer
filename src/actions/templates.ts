@@ -1128,7 +1128,6 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
   transactionHash,
   user,
   nodeID,
-  hardwareProviderName,
   duration,
   payment,
 }: {
@@ -1203,7 +1202,7 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Hardware Provider:* ${hardwareProviderName}`,
+          text: `*Hardware Provider:* Artifact`,
         },
       },
     ],
@@ -1213,7 +1212,6 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
 export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
   transactionHash,
   nodeID,
-  hardwareProviderName,
   owner,
 }: {
   owner: string;
@@ -1277,7 +1275,7 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Hardware Provider:* ${hardwareProviderName}`,
+          text: `*Hardware Provider:* Artifact`,
         },
       },
     ],
