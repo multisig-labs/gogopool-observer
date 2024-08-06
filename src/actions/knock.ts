@@ -21,11 +21,14 @@ export class KnockClient extends Client {
   }
 
   async sendMessage(_message: WebhookMessageCreateOptions, workflowData?: any) {
-    console.log("workflowData", workflowData);
+    if (!workflowData) {
+      console.log("workflowData is undefined");
+      return;
+    }
     if (!this._knockClient) {
       throw new Error("Knock client not initialized");
     } else if (workflowData) {
-      console.log("workflowData", workflowData);
+      console.log("Sending message to knock");
       await this._knockClient.workflows.trigger("new-oneclick-minipool", {
         recipients: [
           {
