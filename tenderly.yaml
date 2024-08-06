@@ -14,7 +14,7 @@ actions:
               - network: 43113
                 eventEmitted:
                   contract:
-                    address: 0xF05403CD8DF25A1E585768D9c6b7481266566849
+                    address: 0xd68922cB57Ff95F705405553A92aaD8746A55F88
                   name: HardwareRented
                 status: success
             status:
@@ -28,7 +28,7 @@ actions:
             filters:
               - eventEmitted:
                   contract:
-                    address: 0x4C4B2663ad02E6A25ee96CCC15cd5eca1A8407cf
+                    address: 0x9779eF3E309337A5F1043878886e5de1cdA4B6EB
                   name: MinipoolStatusChanged
                 status: success
                 network: 43113
@@ -43,7 +43,7 @@ actions:
             filters:
               - eventEmitted:
                   contract:
-                    address: 0x4C4B2663ad02E6A25ee96CCC15cd5eca1A8407cf
+                    address: 0x9779eF3E309337A5F1043878886e5de1cdA4B6EB
                   name: MinipoolLaunched
                 status: success
                 network: 43113
