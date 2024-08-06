@@ -5,10 +5,6 @@ export const getEmojiAddress = (address: string) => {
   return `${hashEmoji(address)} ${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
-export const getAddressLink = (address: string) => {
-  return `https://snowscan.xyz/address/${address}`
-}
-
 export const getEmojiNodeId = (address: string) => {
   const emoji = hashEmoji(address);
   const nodeId = nodeHexToID(address);

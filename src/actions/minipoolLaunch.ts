@@ -10,6 +10,7 @@ const HARDWARE_PROVIDERS: Record<string, string> = {
   "0x0000000000000000000000000000000000000000000000000000000000000000": "Manual",
 }
 const handleMinipoolLaunchedEvent = async (
+  context: Context,
   transactionEvent: TransactionEvent,
   minipoolLaunchedEvent: MinipoolLaunched
 ) => {
@@ -18,7 +19,9 @@ const handleMinipoolLaunchedEvent = async (
   if(!hardwareProviderName || hardwareProviderName == "Manual") {
     return console.log("Minipool launch ignored with hardware provider: ", hardwareProviderName, hardwareProvider);
   }
+  const network = context.metadata.getNetwork()
   const slackMessage = await SLACK_MINIPOOL_LAUNCHED_TEMPLATE({
+    network,
     transactionHash: transactionEvent.hash,
     nodeID: nodeHexToID(nodeID),
     hardwareProviderName,
@@ -41,7 +44,7 @@ export const minipoolLaunched = async (context: Context, event: Event) => {
 
   const minipoolLaunchedEvent = await getMinipoolLaunchedEvent(transactionEvent);
   if (minipoolLaunchedEvent) {
-    await handleMinipoolLaunchedEvent(transactionEvent, minipoolLaunchedEvent);
+    await handleMinipoolLaunchedEvent(context,transactionEvent, minipoolLaunchedEvent);
   } else {
     throw new Error("No Withdraw or Deposit event found");
   }

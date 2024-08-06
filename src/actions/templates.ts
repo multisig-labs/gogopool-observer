@@ -1,4 +1,4 @@
-import { TransactionEvent } from "@tenderly/actions";
+import { Network, TransactionEvent } from "@tenderly/actions";
 // import { formatDistance } from "date-fns";
 import {
   APIEmbedField,
@@ -8,7 +8,7 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import { BigNumber, utils } from "ethers";
-import { getOrdinalDisplay, nodeHexToID } from "./utils";
+import { getAvascanUrl, getExplorerUrl, getOrdinalDisplay, nodeHexToID } from "./utils";
 import { RewardsInformation, XGGPDeposit } from "./types";
 import { getEmojiAddress, getEmojiNodeId } from "./addresses";
 
@@ -16,7 +16,7 @@ const pilotComponent = (owner: string) => {
   return new ButtonBuilder()
     .setEmoji("🧑‍✈️")
     .setLabel("Pilot")
-    .setURL(`https://snowscan.xyz/address/${owner}`)
+    .setURL(getExplorerUrl({address: owner}))
     .setStyle(ButtonStyle.Link);
 };
 
@@ -24,7 +24,7 @@ const balloonComponent = (nodeId: string) => {
   return new ButtonBuilder()
     .setEmoji("🎈")
     .setLabel("Balloon")
-    .setURL(`https://avascan.info/staking/validator/${nodeHexToID(nodeId)}`)
+    .setURL(getAvascanUrl({nodeID: nodeHexToID(nodeId)}))
     .setStyle(ButtonStyle.Link);
 };
 
@@ -32,7 +32,7 @@ const liquidStakerComponent = (owner: string) => {
   return new ButtonBuilder()
     .setEmoji("🌊")
     .setLabel("Liquid Staker")
-    .setURL(`https://snowscan.xyz/address/${owner}`)
+    .setURL(getExplorerUrl({ address: owner}))
     .setStyle(ButtonStyle.Link);
 };
 
@@ -40,7 +40,7 @@ const transactionComponent = (hash: string) => {
   return new ButtonBuilder()
     .setEmoji("📝")
     .setLabel("Transaction")
-    .setURL(`https://snowscan.xyz/tx/${hash}`)
+    .setURL(getExplorerUrl({hash}))
     .setStyle(ButtonStyle.Link);
 };
 
@@ -209,7 +209,7 @@ const liquidStakerField = (
 const liquidStakerDisplay = (owner: string): string =>
   `[${getEmojiAddress(
     utils.getAddress(owner)
-  )}](https://snowscan.xyz/address/${owner})`;
+  )}](${getExplorerUrl({address: owner})})`;
 
 const rewardsCycleStartTimeField = (
   time: BigNumber,
@@ -719,9 +719,7 @@ export const GGAVAX_DEPOSIT_DISPLAY_TEMPLATE = (
     embeds: [
       new EmbedBuilder()
         .setDescription(
-          `${title}\n\n[⛓️ transaction](https://snowscan.xyz/tx/${
-            transactionEvent.hash
-          }) [📄 liquid staking](https://docs.gogopool.com/liquid-staking/how-liquid-staking-works) ${liquidStakerDisplay(
+          `${title}\n\n[⛓️ transaction](${getExplorerUrl({hash: transactionEvent.hash})}) [📄 liquid staking](https://docs.gogopool.com/liquid-staking/how-liquid-staking-works) ${liquidStakerDisplay(
             transactionEvent.from
           )}`
         )
@@ -781,9 +779,7 @@ export const GGAVAX_WITHDRAW_DISPLAY_TEMPLATE = (
     embeds: [
       new EmbedBuilder()
         .setDescription(
-          `${title}\n\n[⛓️ transaction](https://snowscan.xyz/tx/${
-            transactionEvent.hash
-          }) [📄 liquid staking](https://docs.gogopool.com/liquid-staking/how-liquid-staking-works) ${liquidStakerDisplay(
+          `${title}\n\n[⛓️ transaction](${getExplorerUrl({hash: transactionEvent.hash})}) [📄 liquid staking](https://docs.gogopool.com/liquid-staking/how-liquid-staking-works) ${liquidStakerDisplay(
             transactionEvent.from
           )}`
         )
@@ -804,9 +800,7 @@ export const XGGP_DEPOSIT_DISPLAY_TEMPLATE = (
     embeds: [
       new EmbedBuilder()
         .setDescription(
-          `${title}\n\n[⛓️ transaction](https://snowscan.xyz/tx/${
-            transactionEvent.hash
-          }) [📄 vault deposit](https://docs.seafi.app/overview/depositors) ${liquidStakerDisplay(
+          `${title}\n\n[⛓️ transaction](${getExplorerUrl({hash: transactionEvent.hash})}) [📄 vault deposit](https://docs.seafi.app/overview/depositors) ${liquidStakerDisplay(
             transactionEvent.from
           )}`
         )
@@ -827,9 +821,7 @@ export const XGGP_WITHDRAW_DISPLAY_TEMPLATE = (
     embeds: [
       new EmbedBuilder()
         .setDescription(
-          `${title}\n\n[⛓️ transaction](https://snowscan.xyz/tx/${
-            transactionEvent.hash
-          }) [📄 vault withdraw](https://docs.seafi.app/overview/depositors) ${liquidStakerDisplay(
+          `${title}\n\n[⛓️ transaction](${getExplorerUrl({hash: transactionEvent.hash})}) [📄 vault withdraw](https://docs.seafi.app/overview/depositors) ${liquidStakerDisplay(
             transactionEvent.from
           )}`
         )
@@ -1005,6 +997,7 @@ export const REWARDS_ENDING_REMINDER_TEMPLATE = ({
 };
 
 export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
+  network,
   transactionHash,
   blsKey,
   blsSig,
@@ -1015,6 +1008,7 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
   owner,
   hardwareProviderContract,
 }: {
+  network?: Network;
   transactionHash: string;
   blsKey?: string;
   blsSig?: string;
@@ -1033,7 +1027,7 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
         emoji: true,
         text: ":snowman: Transaction",
       },
-      url: `https://snowscan.xyz/tx/${transactionHash}`,
+      url: getExplorerUrl({network, hash: transactionHash}),
       action_id: "transaction-hash-link",
     },
     {
@@ -1043,7 +1037,7 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
         emoji: true,
         text: ":snowman: Owner",
       },
-      url: `https://snowscan.xyz/address/${owner}`,
+      url: getExplorerUrl({network, address: owner}),
       action_id: "owner-link",
     },
     {
@@ -1053,7 +1047,7 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
         emoji: true,
         text: ":closed_umbrella: Validator",
       },
-      url: `https://avascan.info/staking/validator/${nodeID}`,
+      url: getAvascanUrl({network, nodeID}),
       action_id: "node-id-link",
     },
   ];
@@ -1125,12 +1119,14 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
 };
 
 export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
+  network,
   transactionHash,
   user,
   nodeID,
   duration,
   payment,
 }: {
+  network?: Network;
   transactionHash: string;
   user: string;
   nodeID: string;
@@ -1138,6 +1134,10 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
   duration: string;
   payment: string;
 }) => {
+  const headerText =
+    network === Network.MAINNET
+      ? ":computer: Hardware Rented"
+      : ":female-construction-worker::computer: Hardware Rented (Testnet)";
   const displayDuration = Math.floor(parseInt(duration) / 86400);
   return {
     blocks: [
@@ -1145,7 +1145,7 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
         type: "header",
         text: {
           type: "plain_text",
-          text: ":computer: Hardware Rented",
+          text: headerText,
           emoji: true,
         },
       },
@@ -1176,7 +1176,7 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
               emoji: true,
               text: ":snowman: Transaction",
             },
-            url: `https://testnet.snowtrace.io/tx/${transactionHash}`,
+            url: getExplorerUrl({network, hash: transactionHash}),
             action_id: "transaction-hash-link",
           },
           {
@@ -1186,7 +1186,7 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
               emoji: true,
               text: ":bust_in_silhouette: User",
             },
-            url: `https://testnet.snowtrace.io/address/${user}`,
+            url: getExplorerUrl({network, address: user}),
             action_id: "user-link",
           },
         ],
@@ -1210,22 +1210,28 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
 };
 
 export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
+  network,
   transactionHash,
   nodeID,
   owner,
 }: {
+  network?: Network;
   owner: string;
   transactionHash: string;
   nodeID: string;
   hardwareProviderName: string;
 }) => {
+  const headerText =
+    network === Network.MAINNET
+      ? ":rocket: Minipool Launched"
+      : ":female-construction-worker: :rocket: Minipool Launched (Testnet)";
   return {
     blocks: [
       {
         type: "header",
         text: {
           type: "plain_text",
-          text: ":rocket: Minipool Launched",
+          text: headerText,
           emoji: true,
         },
       },
@@ -1239,7 +1245,7 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
               emoji: true,
               text: ":snowman: Transaction",
             },
-            url: `https://testnet.snowscan.io/tx/${transactionHash}`,
+            url: getExplorerUrl({network, hash: transactionHash}),
             action_id: "transaction-hash-link",
           },
           {
@@ -1249,7 +1255,7 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
               emoji: true,
               text: ":bust_in_silhouette: Owner",
             },
-            url: `https://testnet.snowscan.io/address/${owner}`,
+            url: getExplorerUrl({network, address: owner}),
             action_id: "owner-link",
           },
           {
@@ -1259,7 +1265,7 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
               emoji: true,
               text: ":closed_umbrella: Validator",
             },
-            url: `https://testnet.avascan.info/staking/validator/${nodeID}`,
+            url: getAvascanUrl({network, nodeID}),
             action_id: "node-id-link",
           },
         ],

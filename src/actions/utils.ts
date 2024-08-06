@@ -20,7 +20,20 @@ import { webhookClient } from "./webhook";
 
 const bintools = BinTools.getInstance();
 
-// Take 0xF29Bce5F34a74301eB0dE716d5194E4a4aEA5d7A and return NodeID-P7oB2McjBGgW2NXXWVYjV8JEDFoW9xDE5
+export const getExplorerUrl = ({network, hash, address}: {network?: Network, hash?: string, address?: string}) => {
+  const baseUrl = network === Network.FUJI ? "https://testnet.snowtrace.io" : "https://snowtrace.io";
+  if (address) {
+    return `${baseUrl}/address/${address}`;
+  }
+  return `${baseUrl}/tx/${hash}`;
+};
+
+export const getAvascanUrl = ({network, nodeID}: {network?: Network, nodeID: string}) => {
+  const baseUrl = network === Network.FUJI ? "https://testnet.avascan.info" : "https://avascan.info";
+  return `${baseUrl}/staking/validator/${nodeID}`;
+};
+
+// Take 0xF29Bce5F34a74301eB0dE716d5194E4a4EA5d7A and return NodeID-P7oB2McjBGgW2NXXWVYjV8JEDFoW9xDE5
 const nodeIDToHex = (pk: string) => {
   if (!pk.startsWith("NodeID-")) {
     throw new Error("Error: nodeID must start with 'NodeID-'");
