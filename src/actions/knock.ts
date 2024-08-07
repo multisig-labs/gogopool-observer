@@ -1,5 +1,6 @@
 import { Client } from "./emitter";
 import { Knock } from "@knocklabs/node";
+import { Network } from "@tenderly/actions";
 import { WebhookMessageCreateOptions } from "discord.js";
 
 export class KnockClient extends Client {
@@ -20,7 +21,12 @@ export class KnockClient extends Client {
     return this._knockClient;
   }
 
-  async sendMessage(_message: WebhookMessageCreateOptions, workflowData?: any) {
+  async sendMessage(
+    _message: WebhookMessageCreateOptions,
+    workflowData?: any,
+    body?: any,
+    network?: Network
+  ) {
     if (!workflowData) {
       console.log("workflowData is undefined");
       return;
@@ -29,17 +35,22 @@ export class KnockClient extends Client {
       throw new Error("Knock client not initialized");
     } else if (workflowData) {
       console.log("Sending message to knock");
-      await this._knockClient.workflows.trigger("new-oneclick-minipool", {
-        recipients: [
-          {
-            collection: "webhook-users",
-            id: "tenderly",
+      await this._knockClient.workflows.trigger(
+        network === Network.FUJI
+          ? "new-oneclick-minipool-fuji"
+          : "new-oneclick-minipool",
+        {
+          recipients: [
+            {
+              collection: "webhook-users",
+              id: "tenderly",
+            },
+          ],
+          data: {
+            ...workflowData,
           },
-        ],
-        data: {
-          ...workflowData,
-        },
-      });
+        }
+      );
     }
   }
 }

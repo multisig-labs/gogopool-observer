@@ -12,7 +12,7 @@ const HARDWARE_PROVIDERS: Record<string, string> = {
 const handleMinipoolLaunchedEvent = async (
   context: Context,
   transactionEvent: TransactionEvent,
-  minipoolLaunchedEvent: MinipoolLaunched
+  minipoolLaunchedEvent: MinipoolLaunched,
 ) => {
   const { nodeID, hardwareProvider } = minipoolLaunchedEvent;
   const hardwareProviderName = HARDWARE_PROVIDERS[hardwareProvider.toLowerCase()];
@@ -35,7 +35,7 @@ const handleMinipoolLaunchedEvent = async (
     nodeIDHex: nodeID.toString(),
     hardwareProviderName,
   };
-  await emitter.emit(undefined, workflowData);
+  await emitter.emit(undefined, workflowData, undefined, network);
 };
 
 export const minipoolLaunched = async (context: Context, event: Event) => {

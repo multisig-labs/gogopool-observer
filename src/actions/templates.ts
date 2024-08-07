@@ -1135,9 +1135,9 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
   payment: string;
 }) => {
   const headerText =
-    network === Network.MAINNET
-      ? ":computer: Hardware Rented"
-      : ":female-construction-worker::computer: Hardware Rented (Testnet)";
+    network === Network.FUJI
+      ? ":female-construction-worker::computer: Hardware Rented (Testnet)"
+      : ":computer: Hardware Rented";
   const displayDuration = Math.floor(parseInt(duration) / 86400);
   return {
     blocks: [
@@ -1222,9 +1222,9 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
   hardwareProviderName: string;
 }) => {
   const headerText =
-    network === Network.MAINNET
-      ? ":rocket: Minipool Launched"
-      : ":female-construction-worker: :rocket: Minipool Launched (Testnet)";
+    network === Network.FUJI
+      ? ":female-construction-worker: :rocket: Minipool Launched (Testnet)"
+      : ":rocket: Minipool Launched";
   return {
     blocks: [
       {
