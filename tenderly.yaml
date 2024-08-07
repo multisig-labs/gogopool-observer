@@ -17,6 +17,12 @@ actions:
                     address: 0xd68922cB57Ff95F705405553A92aaD8746A55F88
                   name: HardwareRented
                 status: success
+              - network: 43114
+                eventEmitted:
+                  contract:
+                    address: 0xC095ece2C0f315381b4BF6De169FbC219B24194C
+                  name: HardwareRented
+                status: success
             status:
               - mined
       minipoolFuji:
@@ -47,6 +53,12 @@ actions:
                   name: MinipoolLaunched
                 status: success
                 network: 43113
+              - eventEmitted:
+                  contract:
+                    address: 0xc300Bc9B4b690BA7A182126299a0618eCe268Ee7
+                  name: MinipoolLaunched
+                status: success
+                network: 43114
             status:
               - mined
       minipool:
@@ -58,7 +70,7 @@ actions:
             filters:
               - eventEmitted:
                   contract:
-                    address: 0x17395Ad76b236FABeaC3634b78fF8F6970222199
+                    address: 0xc300Bc9B4b690BA7A182126299a0618eCe268Ee7
                   name: MinipoolStatusChanged
                 status: success
                 network: 43114
