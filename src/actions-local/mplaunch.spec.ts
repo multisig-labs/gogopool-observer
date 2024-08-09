@@ -44,7 +44,7 @@ describe("Minipool Launch", () => {
       testRuntime.context.metadata.getNetwork = () => Network.FUJI
       await testRuntime.execute(
         minipoolLaunched,
-        require("./payload/payload-artifact-launch.json")
+        require("./payload/payload-artifact-launch-fuji.json")
       );
     })
   });

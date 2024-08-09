@@ -74,6 +74,7 @@ export interface HardwareRented extends Event {
 export interface MinipoolLaunched extends Event {
   nodeID: string;
   hardwareProvider: string;
+  duration: BigNumber;
 }
 
 export interface WithdrawnForStaking extends Event {
