@@ -19,8 +19,8 @@ import { abi as HardwareProviderAbi } from "./abis/artifactHardwareProvider";
 
 export const isDev = process.env.NODE_ENV === "development";
 
-export const TENDERLY_PROJECT_SLUG = "arbor-finance";
-export const TENDERLY_USERNAME = "namaskar_1f64f";
+export const TENDERLY_PROJECT_SLUG = "multisiglabs";
+export const TENDERLY_USERNAME = "gogopool";
 export const JSON_RPC_URL_SECRET_NAME = "JSON_RPC_URL";
 export const JSON_RPC_URL_FUJI_SECRET_NAME = "JSON_RPC_URL_FUJI";
 export const DISCORD_WEBHOOK_URL_SECRET_NAME = "PROD_WEBHOOK_URL";
@@ -53,7 +53,7 @@ export const CLAIM_NODE_OP_ADDRESS =
   "0xb42CfaD450B46FDc9cAC5FBF14Bc2e6091AfC35c";
 export const CLAIM_PROTOCOL_DAO_ADDRESS =
   "0x4169CF88c7Ed811E6f6e61917c5b915BeA49476c";
-export const MINIPOOL_MANAGER_ADDRESS = "0x17395Ad76b236FABeaC3634b78fF8F6970222199";
+export const MINIPOOL_MANAGER_ADDRESS = "0xc300Bc9B4b690BA7A182126299a0618eCe268Ee7";
 export const MINIPOOL_MANAGER_ADDRESS_FUJI =
   "0x4C4B2663ad02E6A25ee96CCC15cd5eca1A8407cf";
 export const MULTISIG_MANAGER_ADDRESS =

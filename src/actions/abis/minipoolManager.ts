@@ -213,6 +213,12 @@ export const abi = [
         name: "hardwareProvider",
         type: "bytes32",
       },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "duration",
+        type: "uint256",
+      },
     ],
     name: "MinipoolLaunched",
     type: "event",
