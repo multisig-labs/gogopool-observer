@@ -1,6 +1,11 @@
-import { Context, Event, PeriodicEvent, TransactionEvent } from "@tenderly/actions";
+import {
+  Context,
+  Event,
+  PeriodicEvent,
+  TransactionEvent,
+} from "@tenderly/actions";
 import { RewardsInformation } from "./types";
-import { jsonRpcProvider } from "./ethers";
+import { chainCommunicator } from "./chain";
 import {
   PROTOCOL_DAO_ADDRESS,
   PROTOCOL_DAO_INTERFACE,
@@ -15,42 +20,52 @@ import {
   REWARDS_ENDING_REMINDER_TEMPLATE,
   REWARDS_NEW_CYCLE_TEMPLATE,
 } from "./templates";
+import RewardsPool from "./generated/contracts/RewardsPool";
+import ProtocolDAO from "./generated/contracts/ProtocolDAO";
 
 const getRewardsInformation = async (): Promise<RewardsInformation> => {
-  const getRewardsCycleStartTime = jsonRpcProvider.getProvider().call({
-    to: REWARDS_POOL_ADDRESS,
-    data: REWARDS_POOL_INTERFACE.encodeFunctionData("getRewardsCycleStartTime"),
+  const getRewardsCycleStartTime = chainCommunicator
+    .getProvider()
+    .readContract({
+      address: REWARDS_POOL_ADDRESS,
+      abi: RewardsPool,
+      functionName: "getRewardsCycleStartTime",
+    });
+  const getRewardsCycleTotalAmt = chainCommunicator.getProvider().readContract({
+    address: REWARDS_POOL_ADDRESS,
+    abi: RewardsPool,
+    functionName: "getRewardsCycleTotalAmt",
   });
-  const getRewardsCycleTotalAmt = jsonRpcProvider.getProvider().call({
-    to: REWARDS_POOL_ADDRESS,
-    data: REWARDS_POOL_INTERFACE.encodeFunctionData("getRewardsCycleTotalAmt"),
+  const getRewardsCycleCount = chainCommunicator.getProvider().readContract({
+    address: REWARDS_POOL_ADDRESS,
+    abi: RewardsPool,
+    functionName: "getRewardsCycleCount",
   });
-  const getRewardsCycleCount = jsonRpcProvider.getProvider().call({
-    to: REWARDS_POOL_ADDRESS,
-    data: REWARDS_POOL_INTERFACE.encodeFunctionData("getRewardsCycleCount"),
+  const getInflationAmt = chainCommunicator.getProvider().readContract({
+    address: REWARDS_POOL_ADDRESS,
+    abi: RewardsPool,
+    functionName: "getInflationAmt",
   });
-  const getInflationAmt = jsonRpcProvider.getProvider().call({
-    to: REWARDS_POOL_ADDRESS,
-    data: REWARDS_POOL_INTERFACE.encodeFunctionData("getInflationAmt"),
+  const getRewardsCycleSeconds = chainCommunicator.getProvider().readContract({
+    address: PROTOCOL_DAO_ADDRESS,
+    abi: ProtocolDAO,
+    functionName: "getRewardsCycleSeconds",
   });
-  const getRewardsCycleSeconds = jsonRpcProvider.getProvider().call({
-    to: PROTOCOL_DAO_ADDRESS,
-    data: PROTOCOL_DAO_INTERFACE.encodeFunctionData("getRewardsCycleSeconds"),
-  });
-  const getRewardsEligibilityMinSeconds = jsonRpcProvider.getProvider().call({
-    to: PROTOCOL_DAO_ADDRESS,
-    data: PROTOCOL_DAO_INTERFACE.encodeFunctionData(
-      "getRewardsEligibilityMinSeconds"
-    ),
-  });
+  const getRewardsEligibilityMinSeconds = chainCommunicator
+    .getProvider()
+    .readContract({
+      address: PROTOCOL_DAO_ADDRESS,
+      abi: ProtocolDAO,
+      functionName: "getRewardsEligibilityMinSeconds",
+    });
 
   const [
-    getRewardsCycleStartTimeResult,
-    getRewardsCycleTotalAmtResult,
-    getRewardsCycleCountResult,
-    getInflationAmtResult,
-    getRewardsCycleSecondsResult,
-    getRewardsEligibilityMinSecondsResult,
+    rewardsCycleStartTime,
+    rewardsCycleTotalAmt,
+    rewardsCycleCount,
+    inflationInformation,
+    rewardsCycleSeconds,
+    rewardsEligibilityMinSeconds,
   ] = await Promise.all([
     getRewardsCycleStartTime,
     getRewardsCycleTotalAmt,
@@ -60,37 +75,10 @@ const getRewardsInformation = async (): Promise<RewardsInformation> => {
     getRewardsEligibilityMinSeconds,
   ]);
 
-  const rewardsCycleStartTime = REWARDS_POOL_INTERFACE.decodeFunctionResult(
-    "getRewardsCycleStartTime",
-    getRewardsCycleStartTimeResult
-  )[0] as BigNumber;
-  const rewardsCycleTotalAmt = REWARDS_POOL_INTERFACE.decodeFunctionResult(
-    "getRewardsCycleTotalAmt",
-    getRewardsCycleTotalAmtResult
-  )[0] as BigNumber;
-  const rewardsCycleCount = REWARDS_POOL_INTERFACE.decodeFunctionResult(
-    "getRewardsCycleCount",
-    getRewardsCycleCountResult
-  )[0] as BigNumber;
-  const inflationAmt = REWARDS_POOL_INTERFACE.decodeFunctionResult(
-    "getInflationAmt",
-    getInflationAmtResult
-  )[0] as BigNumber;
-  const rewardsCycleSeconds = PROTOCOL_DAO_INTERFACE.decodeFunctionResult(
-    "getRewardsCycleSeconds",
-    getRewardsCycleSecondsResult
-  )[0] as BigNumber;
-  const rewardsEligibilityMinSeconds =
-    PROTOCOL_DAO_INTERFACE.decodeFunctionResult(
-      "getRewardsEligibilityMinSeconds",
-      getRewardsEligibilityMinSecondsResult
-    )[0] as BigNumber;
-
-  const rewardsCycleEndTime = rewardsCycleStartTime.add(rewardsCycleSeconds);
-  const rewardsEligibilityTime = rewardsCycleStartTime.add(
-    rewardsEligibilityMinSeconds
-  );
-
+  const rewardsCycleEndTime = rewardsCycleStartTime + rewardsCycleSeconds;
+  const rewardsEligibilityTime =
+    rewardsCycleStartTime + rewardsEligibilityMinSeconds;
+  const inflationAmt = inflationInformation[1] - inflationInformation[0];
   return {
     rewardsCycleStartTime,
     rewardsCycleSeconds,
@@ -133,7 +121,7 @@ const getRewardsType = async (
 ): Promise<RewardsType> => {
   console.log(time);
   const now = Math.ceil(time.getTime() / 1000);
-  const cycle = rewardsInformation.rewardsCycleCount.toNumber();
+  const cycle = Number(rewardsInformation.rewardsCycleCount);
 
   /* 
     Notify for new cycle
@@ -143,8 +131,8 @@ const getRewardsType = async (
   const hasNotifiedForNewCycle =
     (await context.storage.getNumber(RewardsType.NEW_REWARDS_CYCLE)) === cycle;
   const shouldNotifyForNewCycle =
-    rewardsInformation.rewardsCycleStartTime.lt(now) &&
-    rewardsInformation.rewardsEligibilityTime.sub(7 * 24 * 60 * 60).gt(now);
+    rewardsInformation.rewardsCycleStartTime < now &&
+    rewardsInformation.rewardsEligibilityTime - 7n * 24n * 60n * 60n > now;
   if (!hasNotifiedForNewCycle && shouldNotifyForNewCycle) {
     console.log("new cycle");
     await context.storage.putNumber(RewardsType.NEW_REWARDS_CYCLE, cycle);
@@ -159,8 +147,8 @@ const getRewardsType = async (
     (await context.storage.getNumber(RewardsType.ELIGIBILITY_REMINDER)) ===
     cycle;
   const shouldNotifyForEligibility =
-    rewardsInformation.rewardsEligibilityTime.sub(7 * 24 * 60 * 60).lt(now) &&
-    rewardsInformation.rewardsEligibilityTime.gt(now);
+    rewardsInformation.rewardsEligibilityTime - 7n * 24n * 60n * 60n < now &&
+    rewardsInformation.rewardsEligibilityTime > now;
   if (!hasNotifiedForEligibility && shouldNotifyForEligibility) {
     await context.storage.putNumber(RewardsType.ELIGIBILITY_REMINDER, cycle);
     return RewardsType.ELIGIBILITY_REMINDER;
@@ -174,8 +162,8 @@ const getRewardsType = async (
     (await context.storage.getNumber(RewardsType.CYCLE_ENDING_REMINDER)) ===
     cycle;
   const shouldNotifyForCycleEnding =
-    rewardsInformation.rewardsCycleEndTime.sub(3 * 24 * 60 * 60).lt(now) &&
-    rewardsInformation.rewardsCycleEndTime.gt(now);
+    rewardsInformation.rewardsCycleEndTime - 3n * 24n * 60n * 60n < now &&
+    rewardsInformation.rewardsCycleEndTime > now;
   if (!hasNotifiedForCycleEnding && shouldNotifyForCycleEnding) {
     await context.storage.putNumber(RewardsType.CYCLE_ENDING_REMINDER, cycle);
     return RewardsType.CYCLE_ENDING_REMINDER;
@@ -192,8 +180,8 @@ export const checkRewardsPeriodic = async (context: Context, event: Event) => {
   );
 };
 
-export const rewardsEvent = async (context: Context, event:Event)=>{
+export const rewardsEvent = async (context: Context, event: Event) => {
   await initServices(context);
-  const transactionEvent = event as TransactionEvent
+  const transactionEvent = event as TransactionEvent;
   return transactionEvent;
-}
+};

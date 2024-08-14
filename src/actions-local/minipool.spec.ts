@@ -3,7 +3,7 @@ import { TestRuntime } from "@tenderly/actions-test";
 
 import { beforeAll, describe, test } from "vitest";
 
-import { minipoolStatusChange } from "../actions/minipool";
+import { minipoolStatusChange, minipoolUndercollateralized } from "../actions/minipool";
 
 config();
 
@@ -20,6 +20,14 @@ describe("Minipool", () => {
         testRuntime.context.secrets.put(key, value);
       }
     }
+  });
+  describe("Undercollateralized", () => {
+    test.concurrent("0 [undercollateralized].", async () => {
+      await testRuntime.execute(
+        minipoolUndercollateralized,
+        require("./payload/payload-minipool-undercollateralized.json")
+      );
+    });
   });
   describe("Statuses", () => {
     test.concurrent("0 [prelaunch].", async () => {

@@ -9,6 +9,11 @@ const HARDWARE_PROVIDERS: Record<string, string> = {
   "0x9e8a01bb951fb38ff9aa0ddecfcda59c7d92b7e1569928f14e6d7bd3cce2f860": "Artifact",
   "0x0000000000000000000000000000000000000000000000000000000000000000": "Manual",
 }
+
+export const getHardwareProviderName = (hardwareProvider: string) => {
+  return HARDWARE_PROVIDERS[hardwareProvider.toLowerCase()] || "Unknown";
+}
+
 const handleMinipoolLaunchedEvent = async (
   context: Context,
   transactionEvent: TransactionEvent,

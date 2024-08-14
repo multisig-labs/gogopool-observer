@@ -1,5 +1,3 @@
-import { BigNumber } from "ethers";
-
 type Event = {
   address: string;
 };
@@ -7,104 +5,104 @@ type Event = {
 export interface TransferEvent extends Event {
   from: string;
   to: string;
-  value: BigNumber;
+  value: bigint;
 }
 
 export interface MinipoolStatusChanged extends Event {
   nodeID: string;
-  status: BigNumber;
+  status: bigint;
 }
 
 export interface GGPWithdrawn extends Event {
   to: string;
-  amount: BigNumber;
+  amount: bigint;
 }
 
 export interface GGPStaked extends Event {
   from: string;
-  amount: BigNumber;
+  amount: bigint;
 }
 
 export interface GGAVAXWithdraw extends Event {
   caller: string;
   receiver: string;
   owner: string;
-  assets: BigNumber;
-  shares: BigNumber;
+  assets: bigint;
+  shares: bigint;
 }
 
 export interface GGAVAXDeposit extends Event {
   caller: string;
   owner: string;
-  assets: BigNumber;
-  shares: BigNumber;
+  assets: bigint;
+  shares: bigint;
 }
 
 export interface XGGPDeposit extends Event {
   sender: string;
   owner: string;
-  assets: BigNumber;
-  shares: BigNumber;
+  assets: bigint;
+  shares: bigint;
 }
 
 export interface XGGPWithdraw extends Event {
   sender: string;
   receiver: string;
   owner: string;
-  assets: BigNumber;
-  shares: BigNumber;
+  assets: bigint;
+  shares: bigint;
 }
 
 export interface GGPCapUpdated extends Event {
-  newMax: BigNumber;
+  newMax: bigint;
 }
 
 export interface TargetAPRUpdated extends Event {
-  newTargetAPR: BigNumber;
+  newTargetAPR: bigint;
 }
 
 export interface HardwareRented extends Event {
   user: string;
   nodeID: string;
   hardwareProviderName: string;
-  duration: BigNumber;
-  payment: BigNumber;
+  duration: bigint;
+  payment: bigint;
 }
 
 export interface MinipoolLaunched extends Event {
   nodeID: string;
   hardwareProvider: string;
-  duration: BigNumber;
+  duration: bigint;
 }
 
 export interface WithdrawnForStaking extends Event {
   caller: string;
-  assets: BigNumber;
+  assets: bigint;
 }
 
 export interface DepositedFromStaking extends Event {
   caller: string;
-  amount: BigNumber;
+  amount: bigint;
 }
 
 export interface RewardsDistributed extends Event {
-  amount: BigNumber;
+  amount: bigint;
 }
 
 export interface Withdrawl extends Event {
   src: string;
-  wad: BigNumber;
+  wad: bigint;
 }
 
 export interface AVAXDeposited extends Event {
   by: string;
-  amount: BigNumber;
+  amount: bigint;
 }
 
 export interface NewStreamlinedMinipoolMade extends Event {
   nodeID: string;
   owner: string;
-  hardwareProviderContract: BigNumber;
+  hardwareProviderContract: bigint;
 }
 
 export enum MinipoolStatus {
@@ -121,54 +119,49 @@ export enum MinipoolStatus {
 }
 
 export type Minipool = {
-  index: BigNumber;
+  index: bigint;
   nodeID: string;
-  status: BigNumber;
-  duration: BigNumber;
-  delegationFee: BigNumber;
+  status: bigint;
+  duration: bigint;
+  delegationFee: bigint;
   owner: string;
   multisigAddr: string;
-  avaxNodeOpAmt: BigNumber;
-  avaxNodeOpInitialAmt: BigNumber;
-  avaxLiquidStakerAmt: BigNumber;
+  avaxNodeOpAmt: bigint;
+  avaxNodeOpInitialAmt: bigint;
+  avaxLiquidStakerAmt: bigint;
   txID: string;
-  creationTime: BigNumber;
-  initialStartTime: BigNumber;
-  startTime: BigNumber;
-  endTime: BigNumber;
-  avaxTotalRewardAmt: BigNumber;
+  creationTime: bigint;
+  initialStartTime: bigint;
+  startTime: bigint;
+  endTime: bigint;
+  avaxTotalRewardAmt: bigint;
   errorCode: string;
-  ggpSlashAmt: BigNumber;
-  avaxNodeOpRewardAmt: BigNumber;
+  ggpSlashAmt: bigint;
+  avaxNodeOpRewardAmt: bigint;
   blsPubkeyAndSig: string;
-  avaxLiquidStakerRewardAmt: BigNumber;
+  avaxLiquidStakerRewardAmt: bigint;
 };
 
 export type StakerInformation = {
   stakerAddr: string;
-  avaxAssigned: BigNumber;
-  avaxStaked: BigNumber;
-  avaxValidating: BigNumber;
-  avaxValidatingHighWater: BigNumber;
-  ggpRewards: BigNumber;
-  ggpStaked: BigNumber;
-  lastRewardsCycleCompleted: BigNumber;
-  rewardsStartTime: BigNumber;
-  ggpLockedUntil: BigNumber;
-};
-
-export type GgAvaxInformation = {
-  amountAvailableForStaking: BigNumber;
-  stakingTotalAssets: BigNumber;
+  avaxAssigned: bigint;
+  avaxStaked: bigint;
+  avaxValidating: bigint;
+  avaxValidatingHighWater: bigint;
+  ggpRewards: bigint;
+  ggpStaked: bigint;
+  lastRewardsCycleCompleted: bigint;
+  rewardsStartTime: bigint;
+  ggpLockedUntil: bigint;
 };
 
 export type RewardsInformation = {
-  rewardsCycleStartTime: BigNumber;
-  rewardsCycleEndTime: BigNumber;
-  rewardsCycleTotalAmt: BigNumber;
-  rewardsCycleCount: BigNumber;
-  inflationAmt: BigNumber;
-  rewardsCycleSeconds: BigNumber;
-  rewardsEligibilityMinSeconds: BigNumber;
-  rewardsEligibilityTime: BigNumber;
+  rewardsCycleStartTime: bigint;
+  rewardsCycleEndTime: bigint;
+  rewardsCycleTotalAmt: bigint;
+  rewardsCycleCount: bigint;
+  inflationAmt: bigint;
+  rewardsCycleSeconds: bigint;
+  rewardsEligibilityMinSeconds: bigint;
+  rewardsEligibilityTime: bigint;
 };

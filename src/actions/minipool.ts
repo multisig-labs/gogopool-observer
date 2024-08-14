@@ -1,10 +1,16 @@
 import { Context, Event, Network, TransactionEvent } from "@tenderly/actions";
+import { WebhookMessageCreateOptions } from "discord.js";
+import { chainCommunicator } from "./chain";
 import {
   MINIPOOL_MANAGER_ADDRESS,
   MINIPOOL_MANAGER_ADDRESS_FUJI,
   MINIPOOL_MANAGER_INTERFACE,
   MINIPOOL_STREAMLINER_INTERFACE,
 } from "./constants";
+import { emitter } from "./emitter";
+import MinipoolManager from "./generated/contracts/MinipoolManager";
+import { getMatchingEvents } from "./logParsing";
+import { getHardwareProviderName } from "./minipoolLaunch";
 import {
   MINIPOOL_CANCELED_TEMPLATE,
   MINIPOOL_ERROR_TEMPLATE,
@@ -15,42 +21,35 @@ import {
   MINIPOOL_STAKING_TEMPLATE,
   MINIPOOL_STREAMLINE_TEMPLATE,
   MINIPOOL_WITHDRAWABLE_TEMPLATE,
+  SLACK_UNDERCOLLATERALIZED_TEMPLATE
 } from "./templates";
-import { getMatchingEvents } from "./logParsing";
 import {
-  Minipool,
   MinipoolStatus,
   MinipoolStatusChanged,
   NewStreamlinedMinipoolMade,
 } from "./types";
-import { jsonRpcProvider } from "./ethers";
-import { WebhookMessageCreateOptions } from "discord.js";
-import { initServices } from "./utils";
-import { emitter } from "./emitter";
-import { BigNumber } from "ethers";
+import { initServices, nodeHexToID } from "./utils";
 
 export const getMinipoolDataFromNodeId = async (
   nodeID: string,
   network?: Network
-): Promise<Minipool> => {
-  const minipoolCallResult = await jsonRpcProvider.getProvider().call({
-    to: network === Network.FUJI ? MINIPOOL_MANAGER_ADDRESS_FUJI : MINIPOOL_MANAGER_ADDRESS,
-    data: MINIPOOL_MANAGER_INTERFACE.encodeFunctionData("getMinipoolByNodeID", [
-      nodeID,
-    ]),
+) => {
+  return await chainCommunicator.getProvider().readContract({
+    address:
+      network === Network.FUJI
+        ? MINIPOOL_MANAGER_ADDRESS_FUJI
+        : MINIPOOL_MANAGER_ADDRESS,
+    functionName: "getMinipoolByNodeID",
+    args: [nodeID as `0x${string}`],
+    abi: MinipoolManager,
   });
-  const minipoolResult = MINIPOOL_MANAGER_INTERFACE.decodeFunctionResult(
-    "getMinipoolByNodeID",
-    minipoolCallResult
-  )[0];
-  return minipoolResult;
 };
 
 const getMessageFromStatusChangedEvent = async (
   statusChangedEvent: MinipoolStatusChanged,
   transactionEvent: TransactionEvent,
-  duration: BigNumber,
-  startTime: BigNumber,
+  duration: bigint,
+  startTime: bigint,
   owner: string,
   status?: MinipoolStatus
 ): Promise<WebhookMessageCreateOptions> => {
@@ -72,7 +71,7 @@ const getMessageFromStatusChangedEvent = async (
         nodeID,
         owner,
         duration.toString(),
-        startTime.add(duration).toString()
+        (startTime + duration).toString()
       );
 
     case MinipoolStatus.STAKING:
@@ -81,7 +80,7 @@ const getMessageFromStatusChangedEvent = async (
         nodeID,
         owner,
         duration.toString(),
-        startTime.add(duration).toString()
+        (startTime + duration).toString()
       );
 
     case MinipoolStatus.WITHDRAWABLE:
@@ -90,7 +89,7 @@ const getMessageFromStatusChangedEvent = async (
         nodeID,
         owner,
         duration.toString(),
-        startTime.add(duration).toString()
+        (startTime + duration).toString()
       );
 
     case MinipoolStatus.ERROR:
@@ -99,7 +98,7 @@ const getMessageFromStatusChangedEvent = async (
         nodeID,
         owner,
         duration.toString(),
-        startTime.add(duration).toString()
+        (startTime + duration).toString()
       );
 
     case MinipoolStatus.CANCELED:
@@ -108,7 +107,7 @@ const getMessageFromStatusChangedEvent = async (
         nodeID,
         owner,
         duration.toString(),
-        startTime.add(duration).toString()
+        (startTime + duration).toString()
       );
 
     case MinipoolStatus.FINISHED:
@@ -117,7 +116,7 @@ const getMessageFromStatusChangedEvent = async (
         nodeID,
         owner,
         duration.toString(),
-        startTime.add(duration).toString()
+        (startTime + duration).toString()
       );
 
     case MinipoolStatus.RESTAKE:
@@ -126,7 +125,7 @@ const getMessageFromStatusChangedEvent = async (
         nodeID,
         owner,
         duration.toString(),
-        startTime.add(duration).toString()
+        (startTime + duration).toString()
       );
 
     case MinipoolStatus.STREAMLINE_PRELAUNCH:
@@ -143,7 +142,7 @@ const getMessageFromStatusChangedEvent = async (
         nodeID,
         owner,
         duration.toString(),
-        startTime.add(duration).toString(),
+        (startTime + duration).toString(),
         true
       );
 
@@ -152,32 +151,45 @@ const getMessageFromStatusChangedEvent = async (
   }
 };
 
+const getMinipoolFromEvent = async (
+  event: TransactionEvent,
+  network?: Network
+) => {
+  const statusChangedEvents = getMatchingEvents<MinipoolStatusChanged>(
+    event,
+    MINIPOOL_MANAGER_INTERFACE,
+    "MinipoolStatusChanged"
+  );
+
+  console.info(
+    `Found ${statusChangedEvents.length} MinipoolStatusChanged events`
+  );
+
+  if (statusChangedEvents.length === 0) {
+    console.error("No MinipoolStatusChanged events found");
+    throw new Error("status event not found");
+  }
+
+  const nodeID = statusChangedEvents[0].nodeID;
+  console.info(`Processing minipool for nodeID: ${nodeID}`);
+
+  const minipool = await getMinipoolDataFromNodeId(nodeID, network);
+  return { minipool, statusChangedEvents };
+};
 export const minipoolStatusChange = async (context: Context, event: Event) => {
   console.info("Starting minipoolStatusChange function");
   await initServices(context);
   const transactionEvent = event as TransactionEvent;
 
-  const statusChangedEvents = getMatchingEvents<MinipoolStatusChanged>(
-    transactionEvent,
-    MINIPOOL_MANAGER_INTERFACE,
-    "MinipoolStatusChanged"
-  );
-  console.info(`Found ${statusChangedEvents.length} MinipoolStatusChanged events`);
-
   let message;
   let workflowData;
   let webhookData;
-  if (statusChangedEvents.length === 0) {
-    console.error("No MinipoolStatusChanged events found");
-    throw new Error("status event not found");
-  }
-  const nodeID = statusChangedEvents[0].nodeID;
-  console.info(`Processing minipool for nodeID: ${nodeID}`);
 
-  const minipool = await getMinipoolDataFromNodeId(nodeID, context.metadata.getNetwork());
-  console.debug("Minipool data retrieved", { minipool });
-
-  const { owner, duration, startTime } = minipool;
+  const { minipool, statusChangedEvents } = await getMinipoolFromEvent(
+    transactionEvent,
+    context.metadata.getNetwork()
+  );
+  const { owner, duration, startTime, nodeID } = minipool;
   if (statusChangedEvents.length === 1) {
     console.info("Processing single MinipoolStatusChanged event");
     const streamlinedMinipoolMadeEvent =
@@ -213,7 +225,9 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
       startDate: startTime.toString(),
     };
   } else if (statusChangedEvents.length === 3) {
-    console.info("Processing multiple MinipoolStatusChanged events (likely restake)");
+    console.info(
+      "Processing multiple MinipoolStatusChanged events (likely restake)"
+    );
     message = await getMessageFromStatusChangedEvent(
       statusChangedEvents[1],
       transactionEvent,
@@ -229,7 +243,9 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
       startDate: startTime.toString(),
     };
   } else if (statusChangedEvents.length === 2) {
-    console.info("Processing two MinipoolStatusChanged events (likely relaunch)");
+    console.info(
+      "Processing two MinipoolStatusChanged events (likely relaunch)"
+    );
     message = await getMessageFromStatusChangedEvent(
       statusChangedEvents[0],
       transactionEvent,
@@ -249,7 +265,43 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
     console.error("Failed to generate message");
     throw new Error("message not found");
   }
-  console.info("Emitting message", { nodeID, status: statusChangedEvents[0].status.toString() });
+  console.info("Emitting message", {
+    nodeID,
+    status: statusChangedEvents[0].status.toString(),
+  });
   await emitter.emit(message, workflowData, webhookData);
   console.info("minipoolStatusChange function completed successfully");
+};
+
+export const minipoolUndercollateralized = async (
+  context: Context,
+  event: Event
+) => {
+  console.info("Starting minipoolUndercollateralized function");
+  await initServices(context);
+  const transactionEvent = event as TransactionEvent;
+  const { minipool } = await getMinipoolFromEvent(
+    transactionEvent,
+    context.metadata.getNetwork()
+  );
+  const { owner, duration, nodeID, hardwareProvider } = minipool;
+  const hardwareProviderName = getHardwareProviderName(hardwareProvider);
+  if(hardwareProviderName === "Artifact"){
+    throw new Error("not tracked ; undercollateralized");
+  }
+  const slackMessage = await SLACK_UNDERCOLLATERALIZED_TEMPLATE({
+    transactionHash: transactionEvent.hash,
+    owner,
+    nodeID: nodeHexToID(nodeID),
+  });
+  console.info("Slack message prepared for hardware rented");
+  const workflowData = {
+    ...slackMessage,
+    user: owner,
+    nodeID: nodeHexToID(nodeID),
+    nodeIDHex: nodeID.toString(),
+    hardwareProviderName,
+    duration: duration.toString(),
+  };
+  await emitter.emit(undefined, workflowData);
 };

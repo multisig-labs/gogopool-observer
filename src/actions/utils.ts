@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import {  ethers } from "ethers";
 
 import { BinTools } from "avalanche";
 import { Buffer } from "buffer/"; // note: the slash is important!
@@ -6,7 +6,7 @@ import ms from "ms";
 import { Context, Network } from "@tenderly/actions";
 import { discordClient } from "./discord";
 import { knockClient } from "./knock";
-import { jsonRpcProvider } from "./ethers";
+import { chainCommunicator } from "./chain";
 import {
   DISCORD_WEBHOOK_URL_SECRET_NAME,
   JSON_RPC_URL_FUJI_SECRET_NAME,
@@ -139,7 +139,11 @@ export const sanitizeNumbers = (input: string): string => {
 export const initServices = async (context: Context) => {
   const isFuji = context.metadata.getNetwork() === Network.FUJI;
   console.log("initServices");
-  jsonRpcProvider.init(isFuji ? await context.secrets.get(JSON_RPC_URL_FUJI_SECRET_NAME) : await context.secrets.get(JSON_RPC_URL_SECRET_NAME));
+  chainCommunicator.init(
+    isFuji
+      ? await context.secrets.get(JSON_RPC_URL_FUJI_SECRET_NAME)
+      : await context.secrets.get(JSON_RPC_URL_SECRET_NAME)
+  );
   discordClient.init(
     await context.secrets.get(DISCORD_WEBHOOK_URL_SECRET_NAME)
   );
@@ -169,8 +173,8 @@ export const getOrdinal = (n: number) => {
   return ord;
 };
 
-export const getOrdinalDisplay = (n: BigNumber) => {
-  return `${n.toString()}${getOrdinal(n.toNumber())}`;
+export const getOrdinalDisplay = (n: bigint) => {
+  return `${n.toString()}${getOrdinal(Number(n))}`;
 };
 
 export const decodeBLSKeys = (blsPubkeyAndSig: string) => {

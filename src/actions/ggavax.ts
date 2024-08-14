@@ -1,14 +1,15 @@
 import { Context, Event, TransactionEvent } from "@tenderly/actions";
+import { chainCommunicator } from "./chain";
+import { TOKENGG_AVAX_ADDRESS } from "./constants";
+import { emitter } from "./emitter";
+import TokenggAVAX from "./generated/contracts/TokenggAVAX";
 import { getGgAvaxDepositEvent, getGgAvaxWithdrawEvent } from "./logParsing";
 import {
   GGAVAX_DEPOSIT_DISPLAY_TEMPLATE,
   GGAVAX_WITHDRAW_DISPLAY_TEMPLATE,
 } from "./templates";
-import { GGAVAXDeposit, GGAVAXWithdraw, GgAvaxInformation } from "./types";
-import { jsonRpcProvider } from "./ethers";
-import { TOKENGG_AVAX_ADDRESS, TOKEN_GGAVAX_INTERFACE } from "./constants";
+import { GGAVAXDeposit, GGAVAXWithdraw } from "./types";
 import { initServices } from "./utils";
-import { emitter } from "./emitter";
 
 const handleGgAvaxDepositEvent = async (
   transactionEvent: TransactionEvent,
@@ -40,33 +41,26 @@ const handleGgAvaxEvent = async (
   );
 };
 
-const getGgAvaxInformation = async (): Promise<GgAvaxInformation> => {
-  const amountAvailableForStakingCallResult = jsonRpcProvider
+const getGgAvaxInformation = async () => {
+  const amountAvailableForStakingCallResult = chainCommunicator
     .getProvider()
-    .call({
-      to: TOKENGG_AVAX_ADDRESS,
-      data: TOKEN_GGAVAX_INTERFACE.encodeFunctionData(
-        "amountAvailableForStaking"
-      ),
+    .readContract({
+      address: TOKENGG_AVAX_ADDRESS,
+      functionName: "amountAvailableForStaking",
+      abi: TokenggAVAX,
     });
-  const stakingTotalAssetsCallResult = jsonRpcProvider.getProvider().call({
-    to: TOKENGG_AVAX_ADDRESS,
-    data: TOKEN_GGAVAX_INTERFACE.encodeFunctionData("stakingTotalAssets"),
-  });
-  const [amountAvailableForStakingResult, stakingTotalAssetsResult] =
-    await Promise.all([
-      amountAvailableForStakingCallResult,
-      stakingTotalAssetsCallResult,
-    ]);
+  const stakingTotalAssetsCallResult = chainCommunicator
+    .getProvider()
+    .readContract({
+      address: TOKENGG_AVAX_ADDRESS,
+      functionName: "stakingTotalAssets",
+      abi: TokenggAVAX,
+    });
+  const [amountAvailableForStaking, stakingTotalAssets] = await Promise.all([
+    amountAvailableForStakingCallResult,
+    stakingTotalAssetsCallResult,
+  ]);
 
-  const amountAvailableForStaking = TOKEN_GGAVAX_INTERFACE.decodeFunctionResult(
-    "amountAvailableForStaking",
-    amountAvailableForStakingResult
-  )[0];
-  const stakingTotalAssets = TOKEN_GGAVAX_INTERFACE.decodeFunctionResult(
-    "stakingTotalAssets",
-    stakingTotalAssetsResult
-  )[0];
   return { amountAvailableForStaking, stakingTotalAssets };
 };
 

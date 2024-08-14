@@ -7,7 +7,7 @@ import {
   ButtonStyle,
   EmbedBuilder,
 } from "discord.js";
-import { BigNumber, utils } from "ethers";
+import { utils } from "ethers";
 import { getAvascanUrl, getExplorerUrl, getOrdinalDisplay, nodeHexToID } from "./utils";
 import { RewardsInformation, XGGPDeposit } from "./types";
 import { getEmojiAddress, getEmojiNodeId } from "./addresses";
@@ -96,7 +96,7 @@ const minipoolStatusField = (minipoolStatus: string): APIEmbedField => {
 };
 
 const ggpAmountField = (
-  amount: BigNumber,
+  amount: bigint,
   options?: Partial<APIEmbedField>
 ): APIEmbedField => {
   return {
@@ -109,12 +109,12 @@ const ggpAmountField = (
 
 const differenceField = (
   tokenName: string,
-  difference: BigNumber,
-  total: BigNumber,
+  difference: bigint,
+  total: bigint,
   subtraction?: boolean,
   options?: Partial<APIEmbedField>
 ) => {
-  const oldTotal = subtraction ? total.add(difference) : total.sub(difference);
+  const oldTotal = subtraction ? total + difference : total - difference;
   const differenceString = `${Number(
     utils.formatUnits(oldTotal, 18)
   ).toLocaleString()} ${tokenName} ${subtraction ? "-" : "+"} ${Number(
@@ -131,8 +131,8 @@ const differenceField = (
 };
 
 // const ggpDifferenceField = (
-//   difference: BigNumber,
-//   total: BigNumber,
+//   difference: bigint,
+//   total: bigint,
 //   subtraction?: boolean,
 //   options?: Partial<APIEmbedField>
 // ) => {
@@ -140,8 +140,8 @@ const differenceField = (
 // };
 
 const avaxDifferenceField = (
-  difference: BigNumber,
-  total: BigNumber,
+  difference: bigint,
+  total: bigint,
   subtraction?: boolean,
   options?: Partial<APIEmbedField>
 ) => {
@@ -149,7 +149,7 @@ const avaxDifferenceField = (
 };
 
 const avaxAmountField = (
-  amount: BigNumber,
+  amount: bigint,
   options?: Partial<APIEmbedField>
 ): APIEmbedField => {
   return {
@@ -163,7 +163,7 @@ const avaxAmountField = (
 };
 
 const avaxAmountDisplay = (
-  amount: BigNumber,
+  amount: bigint,
   options?: Intl.NumberFormatOptions
 ): string =>
   `**${Number(utils.formatUnits(amount, 18)).toLocaleString("en-us", {
@@ -172,7 +172,7 @@ const avaxAmountDisplay = (
   })} AVAX**`;
 
 const ggpAmountDisplay = (
-  amount: BigNumber,
+  amount: bigint,
   options?: Intl.NumberFormatOptions
 ): string =>
   `**${Number(utils.formatUnits(amount, 18)).toLocaleString("en-us", {
@@ -181,7 +181,7 @@ const ggpAmountDisplay = (
   })} GGP**`;
 
 const ggAvaxAmountField = (
-  amount: BigNumber,
+  amount: bigint,
   options?: Partial<APIEmbedField>
 ): APIEmbedField => {
   return {
@@ -212,7 +212,7 @@ const liquidStakerDisplay = (owner: string): string =>
   )}](${getExplorerUrl({address: owner})})`;
 
 const rewardsCycleStartTimeField = (
-  time: BigNumber,
+  time: bigint,
   options?: Partial<APIEmbedField>
 ): APIEmbedField => {
   return {
@@ -224,7 +224,7 @@ const rewardsCycleStartTimeField = (
 };
 
 const rewardsCycleEligibilityField = (
-  time: BigNumber,
+  time: bigint,
   options?: Partial<APIEmbedField>
 ): APIEmbedField => {
   return {
@@ -236,19 +236,19 @@ const rewardsCycleEligibilityField = (
 };
 
 const rewardsCycleDurationField = (
-  duration: BigNumber,
+  duration: bigint,
   options?: Partial<APIEmbedField>
 ): APIEmbedField => {
   return {
     name: "⏳ duration",
-    value: `${duration.div(60 * 60 * 24)} days`,
+    value: `${duration / (60n * 60n * 24n)} days`,
     inline: true,
     ...options,
   };
 };
 
 const rewardsCycleEndTimeField = (
-  time: BigNumber,
+  time: bigint,
   options?: Partial<APIEmbedField>
 ): APIEmbedField => {
   return {
@@ -260,7 +260,7 @@ const rewardsCycleEndTimeField = (
 };
 
 const rewardsCycleTotalRewardsField = (
-  totalRewards: BigNumber,
+  totalRewards: bigint,
   options?: Partial<APIEmbedField>
 ): APIEmbedField => {
   return {
@@ -588,8 +588,8 @@ export const MINIPOOL_RESTAKE_TEMPLATE = (
 export const GGP_STAKING_STAKE_TEMPLATE = (
   transactionEvent: TransactionEvent,
   owner: string,
-  amount: BigNumber,
-  totalStake: BigNumber,
+  amount: bigint,
+  totalStake: bigint,
   isNodeOperator: boolean
 ) => {
   const stakingMessage = (isNodeOperator: boolean) =>
@@ -630,8 +630,8 @@ export const GGP_STAKING_STAKE_TEMPLATE = (
 export const GGP_STAKING_WITHDRAW_TEMPLATE = (
   transactionEvent: TransactionEvent,
   owner: string,
-  amount: BigNumber,
-  totalStake: BigNumber,
+  amount: bigint,
+  totalStake: bigint,
   isNodeOperator: boolean
 ) => {
   const unstakingMessage = (isNodeOperator: boolean) =>
@@ -670,9 +670,9 @@ export const GGP_STAKING_WITHDRAW_TEMPLATE = (
 
 export const GGAVAX_DEPOSIT_TEMPLATE = (
   transactionEvent: TransactionEvent,
-  assets: BigNumber,
-  shares: BigNumber,
-  amountAvailableForStaking: BigNumber
+  assets: bigint,
+  shares: bigint,
+  amountAvailableForStaking: bigint
 ) => {
   return {
     components: [
@@ -703,8 +703,8 @@ export const GGAVAX_DEPOSIT_TEMPLATE = (
 
 export const GGAVAX_DEPOSIT_DISPLAY_TEMPLATE = (
   transactionEvent: TransactionEvent,
-  assets: BigNumber,
-  amountAvailableForStaking: BigNumber
+  assets: bigint,
+  amountAvailableForStaking: bigint
 ) => {
   const title = `⬆️ ${avaxAmountDisplay(
     assets
@@ -730,9 +730,9 @@ export const GGAVAX_DEPOSIT_DISPLAY_TEMPLATE = (
 
 export const GGAVAX_WITHDRAW_TEMPLATE = (
   transactionEvent: TransactionEvent,
-  assets: BigNumber,
-  shares: BigNumber,
-  amountAvailableForStaking: BigNumber
+  assets: bigint,
+  shares: bigint,
+  amountAvailableForStaking: bigint
 ) => {
   return {
     components: [
@@ -763,8 +763,8 @@ export const GGAVAX_WITHDRAW_TEMPLATE = (
 
 export const GGAVAX_WITHDRAW_DISPLAY_TEMPLATE = (
   transactionEvent: TransactionEvent,
-  assets: BigNumber,
-  amountAvailableForStaking: BigNumber
+  assets: bigint,
+  amountAvailableForStaking: bigint
 ) => {
   const title = `⬇️ ${avaxAmountDisplay(
     assets
@@ -811,7 +811,7 @@ export const XGGP_DEPOSIT_DISPLAY_TEMPLATE = (
 
 export const XGGP_WITHDRAW_DISPLAY_TEMPLATE = (
   transactionEvent: TransactionEvent,
-  assets: BigNumber,
+  assets: bigint,
   address: string
 ) => {
   const title = `📤 ${ggpAmountDisplay(
@@ -830,7 +830,7 @@ export const XGGP_WITHDRAW_DISPLAY_TEMPLATE = (
   };
 };
 
-export const XGGP_GGP_CAP_UPDATED_TEMPLATE = (newMax: BigNumber) => {
+export const XGGP_GGP_CAP_UPDATED_TEMPLATE = (newMax: bigint) => {
   return {
     embeds: [
       new EmbedBuilder()
@@ -842,10 +842,10 @@ export const XGGP_GGP_CAP_UPDATED_TEMPLATE = (newMax: BigNumber) => {
 };
 
 export const XGGP_TARGET_APR_UPDATED_TEMPLATE = (
-  targetAprBasisPoints: BigNumber
+  targetAprBasisPoints: bigint
 ) => {
   // 28 days cycles means 13 cycles per year
-  const apr = targetAprBasisPoints.mul(13).div(10000);
+  const apr = targetAprBasisPoints * 13n / 10000n;
   return {
     embeds: [
       new EmbedBuilder()
@@ -857,7 +857,7 @@ export const XGGP_TARGET_APR_UPDATED_TEMPLATE = (
 };
 
 export const XGGP_STAKING_DEPOSIT_TEMPLATE = (
-  assets: BigNumber,
+  assets: bigint,
   caller: string
 ) => {
   return {
@@ -873,7 +873,7 @@ export const XGGP_STAKING_DEPOSIT_TEMPLATE = (
 };
 
 export const XGGP_STAKING_WITHDRAW_TEMPLATE = (
-  amount: BigNumber,
+  amount: bigint,
   caller: string
 ) => {
   return {
@@ -892,7 +892,7 @@ export const XGGP_STAKING_WITHDRAW_TEMPLATE = (
 
 export const XGGP_STAKING_REWARD_TEMPLATE = (
   transactionEvent: TransactionEvent,
-  amount: BigNumber
+  amount: bigint
 ) => {
   return {
     components: [
@@ -919,7 +919,7 @@ export const REWARDS_NEW_CYCLE_TEMPLATE = ({
   rewardsCycleTotalAmt,
   rewardsCycleCount,
 }: RewardsInformation) => {
-  const cycle = getOrdinalDisplay(rewardsCycleCount.add(1));
+  const cycle = getOrdinalDisplay(rewardsCycleCount + 1n);
   return {
     embeds: [
       new EmbedBuilder()
@@ -948,7 +948,7 @@ export const REWARDS_ELIGIBILITY_REMINDER_TEMPLATE = ({
   rewardsCycleCount,
   rewardsEligibilityTime,
 }: RewardsInformation) => {
-  const cycle = getOrdinalDisplay(rewardsCycleCount.add(1));
+  const cycle = getOrdinalDisplay(rewardsCycleCount + 1n);
   return {
     embeds: [
       new EmbedBuilder()
@@ -975,7 +975,7 @@ export const REWARDS_ENDING_REMINDER_TEMPLATE = ({
   rewardsCycleTotalAmt,
   rewardsCycleCount,
 }: RewardsInformation) => {
-  const cycle = getOrdinalDisplay(rewardsCycleCount.add(1));
+  const cycle = getOrdinalDisplay(rewardsCycleCount + 1n);
   return {
     embeds: [
       new EmbedBuilder()
@@ -1017,7 +1017,7 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
   duration: string;
   startTime: string;
   owner: string;
-  hardwareProviderContract: BigNumber;
+  hardwareProviderContract: bigint;
 }) => {
   const elements = [
     {
@@ -1287,3 +1287,79 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
     ],
   };
 };
+
+export const SLACK_UNDERCOLLATERALIZED_TEMPLATE = async ({
+  network,
+  transactionHash,
+  nodeID,
+  owner,
+}: {
+  network?: Network;
+  transactionHash: string;
+  nodeID: string;
+  owner: string;
+}) => {
+  const headerText = "⚠️ Minipool Undercollateralized";
+  return {
+    blocks: [
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: headerText,
+          emoji: true,
+        },
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":snowman: Transaction",
+            },
+            url: getExplorerUrl({ network, hash: transactionHash }),
+            action_id: "transaction-hash-link",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":bust_in_silhouette: Owner",
+            },
+            url: getExplorerUrl({ network, address: owner }),
+            action_id: "owner-link",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":closed_umbrella: Validator",
+            },
+            url: getAvascanUrl({ network, nodeID }),
+            action_id: "node-id-link",
+          },
+        ],
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Node ID:* \`${nodeID}\``,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "This minipool has become undercollateralized and may be at risk of being kicked out of cycling.",
+        },
+      },
+    ],
+  };
+};
+
