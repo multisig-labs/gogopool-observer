@@ -13,8 +13,10 @@ actions:
             filters:
               - network: 43114
                 function:
-                  name: RecordStakingEnd
-                  contract: 0xc300Bc9B4b690BA7A182126299a0618eCe268Ee7
+                  name: recordStakingEnd
+                  contract:
+                    address: 0xc300Bc9B4b690BA7A182126299a0618eCe268Ee7
+                status: success
             status:
               - mined
       artifactHardwareProvider:
