@@ -1,15 +1,15 @@
 import { Context, Event, TransactionEvent } from "@tenderly/actions";
+import { chainCommunicator } from "./chain";
+import { STAKING_ADDRESS } from "./constants";
+import { emitter } from "./emitter";
+import Staking from "./generated/contracts/Staking";
 import { getGgpStakedEvent, getGgpWithdrawnEvent } from "./logParsing";
 import {
   GGP_STAKING_STAKE_TEMPLATE,
   GGP_STAKING_WITHDRAW_TEMPLATE,
 } from "./templates";
 import { GGPStaked, GGPWithdrawn, StakerInformation } from "./types";
-import { chainCommunicator } from "./chain";
-import { STAKING_ADDRESS, STAKING_INTERFACE } from "./constants";
 import { initServices } from "./utils";
-import { emitter } from "./emitter";
-import Staking from "./generated/contracts/Staking";
 
 const handleGgpStakedEvent = async (
   transactionEvent: TransactionEvent,

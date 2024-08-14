@@ -4,24 +4,21 @@ import {
   PeriodicEvent,
   TransactionEvent,
 } from "@tenderly/actions";
-import { RewardsInformation } from "./types";
 import { chainCommunicator } from "./chain";
 import {
   PROTOCOL_DAO_ADDRESS,
-  PROTOCOL_DAO_INTERFACE,
-  REWARDS_POOL_ADDRESS,
-  REWARDS_POOL_INTERFACE,
+  REWARDS_POOL_ADDRESS
 } from "./constants";
-import { initServices } from "./utils";
 import { emitter } from "./emitter";
-import { BigNumber } from "ethers";
+import ProtocolDAO from "./generated/contracts/ProtocolDAO";
+import RewardsPool from "./generated/contracts/RewardsPool";
 import {
   REWARDS_ELIGIBILITY_REMINDER_TEMPLATE,
   REWARDS_ENDING_REMINDER_TEMPLATE,
   REWARDS_NEW_CYCLE_TEMPLATE,
 } from "./templates";
-import RewardsPool from "./generated/contracts/RewardsPool";
-import ProtocolDAO from "./generated/contracts/ProtocolDAO";
+import { RewardsInformation } from "./types";
+import { initServices } from "./utils";
 
 const getRewardsInformation = async (): Promise<RewardsInformation> => {
   const getRewardsCycleStartTime = chainCommunicator
