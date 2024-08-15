@@ -5,20 +5,19 @@ actions:
     sources: src/actions
     specs:
       undercollateralizedEjection:
-        description: Minipool was kicked out of cycling.
-        function: minipool:undercollateralized
+        description: When a minipool gets kicked out of cycling for undercollateralization
+        function: minipoolEjection:undercollateralized
         trigger:
           type: transaction
           transaction:
+            status:
+              - mined
             filters:
               - network: 43114
                 function:
                   name: recordStakingEnd
                   contract:
                     address: 0xc300Bc9B4b690BA7A182126299a0618eCe268Ee7
-                status: success
-            status:
-              - mined
       artifactHardwareProvider:
         description: Artifact hardware provider changed.
         function: artifact:hardwareRented

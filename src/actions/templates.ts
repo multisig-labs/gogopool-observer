@@ -1299,7 +1299,7 @@ export const SLACK_UNDERCOLLATERALIZED_TEMPLATE = async ({
   nodeID: string;
   owner: string;
 }) => {
-  const headerText = "⚠️ Minipool Undercollateralized";
+  const headerText = "⚠️ Minipool Kicked Out";
   return {
     blocks: [
       {
@@ -1356,7 +1356,7 @@ export const SLACK_UNDERCOLLATERALIZED_TEMPLATE = async ({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: "This minipool has become undercollateralized and may be at risk of being kicked out of cycling.",
+          text: "This minipool was undercollateralized at the time of cycling and has been kicked out of the protocol.",
         },
       },
     ],

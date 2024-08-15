@@ -10,7 +10,6 @@ import {
 import { emitter } from "./emitter";
 import MinipoolManager from "./generated/contracts/MinipoolManager";
 import { getMatchingEvents } from "./logParsing";
-import { getHardwareProviderName } from "./minipoolLaunch";
 import {
   MINIPOOL_CANCELED_TEMPLATE,
   MINIPOOL_ERROR_TEMPLATE,
@@ -20,15 +19,14 @@ import {
   MINIPOOL_RESTAKE_TEMPLATE,
   MINIPOOL_STAKING_TEMPLATE,
   MINIPOOL_STREAMLINE_TEMPLATE,
-  MINIPOOL_WITHDRAWABLE_TEMPLATE,
-  SLACK_UNDERCOLLATERALIZED_TEMPLATE
+  MINIPOOL_WITHDRAWABLE_TEMPLATE
 } from "./templates";
 import {
   MinipoolStatus,
   MinipoolStatusChanged,
   NewStreamlinedMinipoolMade,
 } from "./types";
-import { initServices, nodeHexToID } from "./utils";
+import { initServices } from "./utils";
 
 export const getMinipoolDataFromNodeId = async (
   nodeID: string,
@@ -151,7 +149,7 @@ const getMessageFromStatusChangedEvent = async (
   }
 };
 
-const getMinipoolFromEvent = async (
+export const getMinipoolFromEvent = async (
   event: TransactionEvent,
   network?: Network
 ) => {
@@ -271,37 +269,4 @@ export const minipoolStatusChange = async (context: Context, event: Event) => {
   });
   await emitter.emit(message, workflowData, webhookData);
   console.info("minipoolStatusChange function completed successfully");
-};
-
-export const minipoolUndercollateralized = async (
-  context: Context,
-  event: Event
-) => {
-  console.info("Starting minipoolUndercollateralized function");
-  await initServices(context);
-  const transactionEvent = event as TransactionEvent;
-  const { minipool } = await getMinipoolFromEvent(
-    transactionEvent,
-    context.metadata.getNetwork()
-  );
-  const { owner, duration, nodeID, hardwareProvider } = minipool;
-  const hardwareProviderName = getHardwareProviderName(hardwareProvider);
-  if(hardwareProviderName === "Artifact"){
-    throw new Error("not tracked ; undercollateralized");
-  }
-  const slackMessage = await SLACK_UNDERCOLLATERALIZED_TEMPLATE({
-    transactionHash: transactionEvent.hash,
-    owner,
-    nodeID: nodeHexToID(nodeID),
-  });
-  console.info("Slack message prepared for hardware rented");
-  const workflowData = {
-    ...slackMessage,
-    user: owner,
-    nodeID: nodeHexToID(nodeID),
-    nodeIDHex: nodeID.toString(),
-    hardwareProviderName,
-    duration: duration.toString(),
-  };
-  await emitter.emit(undefined, workflowData);
 };

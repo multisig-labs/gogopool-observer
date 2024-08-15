@@ -35,22 +35,24 @@ export class KnockClient extends Client {
       throw new Error("Knock client not initialized");
     } else if (workflowData) {
       console.log("Sending message to knock");
-      await this._knockClient.workflows.trigger(
+      let workflowKey =
         network === Network.FUJI
           ? "new-oneclick-minipool-fuji"
-          : "new-oneclick-minipool",
-        {
-          recipients: [
-            {
-              collection: "webhook-users",
-              id: "tenderly",
-            },
-          ],
-          data: {
-            ...workflowData,
+          : "new-oneclick-minipool";
+      if (workflowData.workflowKey) {
+        workflowKey = workflowData.workflowKey;
+      }
+      await this._knockClient.workflows.trigger(workflowKey, {
+        recipients: [
+          {
+            collection: "webhook-users",
+            id: "tenderly",
           },
-        }
-      );
+        ],
+        data: {
+          ...workflowData,
+        },
+      });
     }
   }
 }
