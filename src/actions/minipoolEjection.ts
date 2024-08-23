@@ -4,11 +4,24 @@ import { getHardwareProviderName } from "./minipoolLaunch";
 import { SLACK_UNDERCOLLATERALIZED_TEMPLATE } from "./templates";
 import { initServices, nodeHexToID } from "./utils";
 import { getMinipoolFromEvent } from "./minipool";
+import { decodeFunctionData } from "viem";
+import MinipoolManager from "./generated/contracts/MinipoolManager";
 
 export const undercollateralized = async (context: Context, event: Event) => {
   console.info("Starting minipoolUndercollateralized function");
   await initServices(context);
   const transactionEvent = event as TransactionEvent;
+
+  const { functionName } = decodeFunctionData({
+    abi: MinipoolManager,
+    data: transactionEvent.input as `0x${string}`,
+  });
+
+  if (functionName !== "recordStakingEnd") {
+    console.log(`functionName ${functionName} !== recordStakingEnd`);
+    return;
+  }
+
   const { minipool } = await getMinipoolFromEvent(
     transactionEvent,
     context.metadata.getNetwork()

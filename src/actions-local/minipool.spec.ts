@@ -1,9 +1,11 @@
 import { config } from "dotenv";
 import { TestRuntime } from "@tenderly/actions-test";
 
-import { beforeAll, describe, test } from "vitest";
+import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 
-import { minipoolStatusChange, minipoolUndercollateralized } from "../actions/minipool";
+import { minipoolStatusChange } from "../actions/minipool";
+import { undercollateralized } from "../actions/minipoolEjection";
+import { emitter } from "../actions/emitter";
 
 config();
 
@@ -22,43 +24,24 @@ describe("Minipool", () => {
     }
   });
   describe("Undercollateralized", () => {
-    test.concurrent("0 [undercollateralized].", async () => {
+    test.concurrent("emits for recordStakingEnd", async () => {
+      const emitSpy = vi.spyOn(emitter, "emit");
       await testRuntime.execute(
-        minipoolUndercollateralized,
+        undercollateralized,
         require("./payload/payload-minipool-undercollateralized.json")
       );
+      expect(emitSpy).toHaveBeenCalled();
     });
-  });
-  describe("Statuses", () => {
-    test.concurrent("0 [prelaunch].", async () => {
-      await testRuntime.execute(
-        minipoolStatusChange,
-        require("./payload/payload-prelaunch-minipool.json")
-      );
-    });
-    test.concurrent("1 [launched].", async () => {
-      await testRuntime.execute(
-        minipoolStatusChange,
-        require("./payload/payload-launched-minipool.json")
-      );
-    });
-    test.concurrent("2 [staking].", async () => {
-      await testRuntime.execute(
-        minipoolStatusChange,
-        require("./payload/payload-staking-minipool.json")
-      );
-    });
-    test.concurrent("3 [withdrawable].", async () => {
-      await testRuntime.execute(
-        minipoolStatusChange,
-        require("./payload/payload-withdrawable-minipool.json")
-      );
-    });
-    test.concurrent("[streamlined].", async () => {
-      await testRuntime.execute(
-        minipoolStatusChange,
-        require("./payload/payload-streamline-minipool.json")
-      );
-    });
+    test.concurrent(
+      "[negative] recordStakingEndThenMaybeCycle shouoldn't emit",
+      async () => {
+        const emitSpy = vi.spyOn(emitter, "emit");
+        await testRuntime.execute(
+          undercollateralized,
+          require("./payload/payload-minipool-undercollateralized-negative.json")
+        );
+        expect(emitSpy).not.toHaveBeenCalled();
+      }
+    );
   });
 });
