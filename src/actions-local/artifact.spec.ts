@@ -24,5 +24,11 @@ describe("Artifact Hardware Provider", () => {
         require("./payload/payload-artifact-rented.json")
       );
     });
+    test.concurrent("hardware rented batch event", async () => {
+      await testRuntime.execute(
+        hardwareRented,
+        require("./payload/payload-artifact-rented-batch.json")
+      );
+    });
   });
 });

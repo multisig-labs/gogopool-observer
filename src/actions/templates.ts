@@ -1122,14 +1122,14 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
   network,
   transactionHash,
   user,
-  nodeID,
+  nodeIDs,
   duration,
   payment,
 }: {
   network?: Network;
   transactionHash: string;
   user: string;
-  nodeID: string;
+  nodeIDs: string[];
   hardwareProviderName: string;
   duration: string;
   payment: string;
@@ -1139,6 +1139,16 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
       ? ":female-construction-worker::computer: Hardware Rented (Testnet)"
       : ":computer: Hardware Rented";
   const displayDuration = Math.floor(parseInt(duration) / 86400);
+  
+  // Create a section for each node ID
+  const nodeIDSections = nodeIDs.map(nodeID => ({
+    type: "section",
+    text: {
+      type: "mrkdwn",
+      text: `*Node ID:* \`${nodeID}\``,
+    },
+  }));
+
   return {
     blocks: [
       {
@@ -1163,6 +1173,14 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
           {
             type: "mrkdwn",
             text: `*Payment:* ${payment} AVAX`,
+          },
+          {
+            type: "mrkdwn",
+            text: "|",
+          },
+          {
+            type: "mrkdwn",
+            text: `*Nodes:* ${nodeIDs.length}`,
           },
         ],
       },
@@ -1191,13 +1209,7 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
           },
         ],
       },
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*Node ID:* \`${nodeID}\``,
-        },
-      },
+      ...nodeIDSections,
       {
         type: "section",
         text: {

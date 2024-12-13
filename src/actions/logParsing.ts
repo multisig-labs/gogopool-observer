@@ -114,14 +114,25 @@ export const getGgAvaxDepositEvent = async (
   }
 };
 
+export const getHardwareRentedEvents = async (
+  transactionEvent: TransactionEvent
+): Promise<HardwareRented[]> => {
+  try {
+    return getMatchingEvents<HardwareRented>(
+      transactionEvent,
+      HARDWARE_PROVIDER_INTERFACE,
+      "HardwareRented"
+    );
+  } catch (e) {
+    return [];
+  }
+};
+
 export const getHardwareRentedEvent = async (
   transactionEvent: TransactionEvent
 ): Promise<HardwareRented | undefined> => {
-  return await getMatchingEvent<HardwareRented>(
-    transactionEvent,
-    HARDWARE_PROVIDER_INTERFACE,
-    "HardwareRented"
-  );
+  const events = await getHardwareRentedEvents(transactionEvent);
+  return events[0];
 };
 
 export const getMinipoolLaunchedEvent = async (
