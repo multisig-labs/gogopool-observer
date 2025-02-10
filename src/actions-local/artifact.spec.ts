@@ -1,5 +1,5 @@
-import { config } from "dotenv";
 import { TestRuntime } from "@tenderly/actions-test";
+import { config } from "dotenv";
 
 import { beforeAll, describe, test } from "vitest";
 
@@ -17,7 +17,7 @@ describe("Artifact Hardware Provider", () => {
     }
   });
 
-  describe("Hardware Rented", () => {
+  describe("Hardware Rented Old", () => {
     test.concurrent("hardware rented event", async () => {
       await testRuntime.execute(
         hardwareRented,
@@ -28,6 +28,14 @@ describe("Artifact Hardware Provider", () => {
       await testRuntime.execute(
         hardwareRented,
         require("./payload/payload-artifact-rented-batch.json")
+      );
+    });
+  });
+  describe("Hardware Rented", () => {
+    test.concurrent("hardware rented event", async () => {
+      await testRuntime.execute(
+        hardwareRented,
+        require("./payload/payload-artifact-rented-new-fuji.json")
       );
     });
   });

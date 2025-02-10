@@ -61,12 +61,21 @@ export interface TargetAPRUpdated extends Event {
   newTargetAPR: bigint;
 }
 
-export interface HardwareRented extends Event {
+export interface HardwareRentedOld extends Event {
   user: string;
   nodeID: string;
   hardwareProviderName: string;
   duration: bigint;
   payment: bigint;
+}
+
+export interface HardwareRented extends Event {
+  user: string;
+  nodeID: string;
+  hardwareProviderName: string;
+  duration: bigint;
+  paymentAmount: bigint;
+  subnetID: string;
 }
 
 export interface MinipoolLaunched extends Event {

@@ -1,8 +1,10 @@
 import { Log, TransactionEvent } from "@tenderly/actions";
 import { Interface } from "ethers/lib/utils";
+import { zeroHash } from "viem";
 import {
   GGP_VAULT_INTERFACE,
   HARDWARE_PROVIDER_INTERFACE,
+  HARDWARE_PROVIDER_NEW_INTERFACE,
   MINIPOOL_MANAGER_INTERFACE,
   STAKING_INTERFACE,
   TOKEN_GGAVAX_INTERFACE,
@@ -15,6 +17,7 @@ import {
   GGPStaked,
   GGPWithdrawn,
   HardwareRented,
+  HardwareRentedOld,
   MinipoolLaunched,
   RewardsDistributed,
   TargetAPRUpdated,
@@ -117,22 +120,33 @@ export const getGgAvaxDepositEvent = async (
 export const getHardwareRentedEvents = async (
   transactionEvent: TransactionEvent
 ): Promise<HardwareRented[]> => {
+  let events: HardwareRented[] = [];
   try {
-    return getMatchingEvents<HardwareRented>(
+    // First try to get the old version (currently on mainnet)
+    events = getMatchingEvents<HardwareRentedOld>(
       transactionEvent,
       HARDWARE_PROVIDER_INTERFACE,
       "HardwareRented"
-    );
+    ).map((event) => ({
+      ...event,
+      paymentAmount: event.payment,
+      subnetID: zeroHash,
+    }));
   } catch (e) {
-    return [];
+    console.log("Error getting hardware rented events", e);
   }
-};
-
-export const getHardwareRentedEvent = async (
-  transactionEvent: TransactionEvent
-): Promise<HardwareRented | undefined> => {
-  const events = await getHardwareRentedEvents(transactionEvent);
-  return events[0];
+  if (!events.length) {
+    try {
+      events = getMatchingEvents<HardwareRented>(
+        transactionEvent,
+        HARDWARE_PROVIDER_NEW_INTERFACE,
+        "HardwareRented"
+      );
+    } catch (e) {
+      console.log("Error getting hardware rented new events", e);
+    }
+  }
+  return events;
 };
 
 export const getMinipoolLaunchedEvent = async (

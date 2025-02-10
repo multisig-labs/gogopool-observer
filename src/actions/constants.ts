@@ -11,6 +11,7 @@ import { abi as GGPVault } from "./abis/ggpvault";
 import { abi as Vault } from "./abis/vault";
 import { MAINNET_ADDRESSES } from "./generated/addresses/43114";
 import { FUJI_ADDRESSES } from "./generated/addresses/43113";
+import ArtifactHardwareProviderNew from "./generated/contracts/ArtifactHardwareProviderNew";
 
 export const isDev = process.env.NODE_ENV === "development";
 
@@ -49,4 +50,7 @@ export const MINIPOOL_STREAMLINER_INTERFACE = new utils.Interface(
 export const GGP_VAULT_INTERFACE = new utils.Interface(GGPVault);
 export const HARDWARE_PROVIDER_INTERFACE = new utils.Interface(
   ArtifactHardwareProvider
+);
+export const HARDWARE_PROVIDER_NEW_INTERFACE = new utils.Interface(
+  ArtifactHardwareProviderNew
 );

@@ -22,7 +22,7 @@ const handleHardwareRentedEvents = async (
   // Send one message per user with all their rented nodes
   for (const [user, events] of Object.entries(eventsByUser)) {
     const nodeIDs = events.map(event => nodeHexToID(event.nodeID));
-    const totalPayment = events.reduce((sum, event) => sum + BigInt(event.payment.toString()), BigInt(0));
+    const totalPayment = events.reduce((sum, event) => sum + BigInt(event.paymentAmount.toString()), BigInt(0));
     const duration = events[0].duration; // Assuming same duration for batch rentals
 
     const slackMessage = await SLACK_HARDWARE_RENTED_TEMPLATE({
