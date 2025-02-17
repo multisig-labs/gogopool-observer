@@ -32,40 +32,43 @@ export const HARDWARE_PROVIDER_MAP = [
   {
     name: "Artifact",
     id: "0x9e8a01bb951fb38ff9aa0ddecfcda59c7d92b7e1569928f14e6d7bd3cce2f860",
-    fujiUrl:
-      "https://hooks.slack.com/services/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",
-    mainnetUrl:
-      "https://hooks.slack.com/services/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",
+    fujiUrlSecretName: "COQNET_ARTIFACT_FUJI_URL",
+    mainnetUrlSecretName: "COQNET_ARTIFACT_MAINNET_URL",
   },
   {
     name: "ChorusOne",
     id: "0x299ee54146ec033ea5775958d91dce74dde4bc03f3b67541fd0ffe59763ec7a3",
-    fujiUrl:
-      "https://hooks.slack.com/services/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",
-    mainnetUrl:
-      "https://hooks.slack.com/services/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",
+    fujiUrlSecretName: "COQNET_CHORUSONE_FUJI_URL",
+    mainnetUrlSecretName: "COQNET_CHORUSONE_MAINNET_URL",
   },
   {
     name: "GoGoPool",
     id: "0x2797e64cefb2c97b8db530c89fd2afd138fba588daee473b454803f2bc71b133",
-    fujiUrl:
-      "https://hooks.slack.com/services/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",
-    mainnetUrl:
-      "https://hooks.slack.com/services/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",
+    fujiUrlSecretName: "COQNET_GOGOPOOL_FUJI_URL",
+    mainnetUrlSecretName: "COQNET_GOGOPOOL_MAINNET_URL",
   },
-];
-const getSlackUrl = (
+] as const;
+
+const getSlackUrl = async (
   hardwareProvider: string,
-  network: Network = Network.MAINNET
+  network: Network = Network.MAINNET,
+  context: Context
 ) => {
   const slackUrl = HARDWARE_PROVIDER_MAP.find(
     ({ id }) => id === hardwareProvider
   );
-  return network === Network.FUJI ? slackUrl?.fujiUrl : slackUrl?.mainnetUrl;
+  if (!slackUrl) {
+    return;
+  }
+  return network === Network.FUJI
+    ? await context.secrets.get(slackUrl?.fujiUrlSecretName)
+    : await context.secrets.get(slackUrl?.mainnetUrlSecretName);
 };
+
 const handleCoqnetHardwareRentedEvents = async (
   transactionEvent: TransactionEvent,
   coqnetHardwareRentedEvents: HardwareRented[],
+  context: Context,
   network?: Network
 ) => {
   const event = coqnetHardwareRentedEvents[0];
@@ -90,7 +93,20 @@ const handleCoqnetHardwareRentedEvents = async (
     subnetName: getSubnetName(event.subnetID, network),
   });
 
-  const slackUrl = getSlackUrl(event.hardwareProviderName, network);
+  const slackUrl = await getSlackUrl(
+    event.hardwareProviderName,
+    network,
+    context
+  );
+
+  if (!slackUrl) {
+    throw new Error(
+      "No Slack URL found for hardware provider: " +
+        event.hardwareProviderName +
+        " on network: " +
+        network
+    );
+  }
 
   await emitter.emit(
     undefined,
@@ -114,6 +130,7 @@ export const coqnetHardwareRented = async (context: Context, event: Event) => {
     await handleCoqnetHardwareRentedEvents(
       transactionEvent,
       coqnetHardwareRentedEvents,
+      context,
       network
     );
   } else {
