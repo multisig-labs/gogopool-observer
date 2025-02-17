@@ -45,6 +45,21 @@ actions:
                 status: success
             status:
               - mined
+      coqnetHardwareProvider:
+        description: Coqnet hardware provider changed.
+        function: coqnet:coqnetHardwareRented
+        trigger:
+          type: transaction
+          transaction:
+            filters:
+              - network: 43113
+                eventEmitted:
+                  contract:
+                    address: 0x5897481CB0C9b0C9101aA7764E2B72cC61F12F89
+                  name: HardwareRented
+                status: success
+            status:
+              - mined
       minipoolFuji:
         description: A minipool's status changed.
         function: minipool:minipoolStatusChange
@@ -157,21 +172,6 @@ actions:
                     address: 0xdF34022e8a280fc79499cA560439Bb6f9797EbD8
                   name: Withdraw
                 status: success
-              - network: 43114
-                eventEmitted:
-                  contract:
-                    address: 0xdF34022e8a280fc79499cA560439Bb6f9797EbD8
-                  name: RewardsDistributed
-                status: success
-            status:
-              - mined
-      vaultRewards:
-        description: vault rewards.
-        function: ggpvault:rewardsDistributed
-        trigger:
-          type: transaction
-          transaction:
-            filters:
               - network: 43114
                 eventEmitted:
                   contract:

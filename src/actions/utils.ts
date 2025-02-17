@@ -17,6 +17,7 @@ import {
 } from "./constants";
 import { emitter } from "./emitter";
 import { webhookClient } from "./webhook";
+import { slackClient } from "./slack";
 
 const bintools = BinTools.getInstance();
 
@@ -157,6 +158,7 @@ export const initServices = async (context: Context) => {
   emitter.addClient(webhookClient);//
   knockClient.init(await context.secrets.get(KNOCK_TOKEN_SECRET_NAME));
   emitter.addClient(knockClient);
+  emitter.addClient(slackClient);
 };
 
 export const getOrdinal = (n: number) => {

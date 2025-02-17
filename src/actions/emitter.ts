@@ -1,8 +1,16 @@
+import { IncomingWebhookSendArguments } from "@slack/webhook";
 import { Network } from "@tenderly/actions";
 import { WebhookMessageCreateOptions } from "discord.js";
 
 export abstract class Client {
-  abstract sendMessage(message?: WebhookMessageCreateOptions, workflowData?: any, body?: any, network?: Network): Promise<void>;
+  abstract sendMessage(
+    message?: WebhookMessageCreateOptions,
+    workflowData?: any,
+    body?: any,
+    network?: Network,
+    slackMessage?: IncomingWebhookSendArguments,
+    slackUrl?: string
+  ): Promise<void>;
   abstract clientId: string; // This should be a unique id to identify the client
 }
 
@@ -20,9 +28,23 @@ export class Emitter {
     this._clients.set(client.clientId, client);
   }
 
-  async emit(message?: WebhookMessageCreateOptions, workflowData?: any, body?: any, network?: Network) {
+  async emit(
+    message?: WebhookMessageCreateOptions,
+    workflowData?: any,
+    body?: any,
+    network?: Network,
+    slackMessage?: IncomingWebhookSendArguments,
+    slackUrl?: string
+  ) {
     const messagePromises = Array.from(this._clients.values()).map((client) =>
-      client.sendMessage(message, workflowData, body, network)
+      client.sendMessage(
+        message,
+        workflowData,
+        body,
+        network,
+        slackMessage,
+        slackUrl
+      )
     );
     await Promise.all(messagePromises);
   }

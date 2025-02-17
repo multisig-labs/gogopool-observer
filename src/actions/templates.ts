@@ -8,7 +8,12 @@ import {
   EmbedBuilder,
 } from "discord.js";
 import { utils } from "ethers";
-import { getAvascanUrl, getExplorerUrl, getOrdinalDisplay, nodeHexToID } from "./utils";
+import {
+  getAvascanUrl,
+  getExplorerUrl,
+  getOrdinalDisplay,
+  nodeHexToID,
+} from "./utils";
 import { RewardsInformation, XGGPDeposit } from "./types";
 import { getEmojiAddress, getEmojiNodeId } from "./addresses";
 
@@ -16,7 +21,7 @@ const pilotComponent = (owner: string) => {
   return new ButtonBuilder()
     .setEmoji("🧑‍✈️")
     .setLabel("Pilot")
-    .setURL(getExplorerUrl({address: owner}))
+    .setURL(getExplorerUrl({ address: owner }))
     .setStyle(ButtonStyle.Link);
 };
 
@@ -24,7 +29,7 @@ const balloonComponent = (nodeId: string) => {
   return new ButtonBuilder()
     .setEmoji("🎈")
     .setLabel("Balloon")
-    .setURL(getAvascanUrl({nodeID: nodeHexToID(nodeId)}))
+    .setURL(getAvascanUrl({ nodeID: nodeHexToID(nodeId) }))
     .setStyle(ButtonStyle.Link);
 };
 
@@ -32,7 +37,7 @@ const liquidStakerComponent = (owner: string) => {
   return new ButtonBuilder()
     .setEmoji("🌊")
     .setLabel("Liquid Staker")
-    .setURL(getExplorerUrl({ address: owner}))
+    .setURL(getExplorerUrl({ address: owner }))
     .setStyle(ButtonStyle.Link);
 };
 
@@ -40,7 +45,7 @@ const transactionComponent = (hash: string) => {
   return new ButtonBuilder()
     .setEmoji("📝")
     .setLabel("Transaction")
-    .setURL(getExplorerUrl({hash}))
+    .setURL(getExplorerUrl({ hash }))
     .setStyle(ButtonStyle.Link);
 };
 
@@ -207,9 +212,9 @@ const liquidStakerField = (
 };
 
 const liquidStakerDisplay = (owner: string): string =>
-  `[${getEmojiAddress(
-    utils.getAddress(owner)
-  )}](${getExplorerUrl({address: owner})})`;
+  `[${getEmojiAddress(utils.getAddress(owner))}](${getExplorerUrl({
+    address: owner,
+  })})`;
 
 const rewardsCycleStartTimeField = (
   time: bigint,
@@ -719,7 +724,9 @@ export const GGAVAX_DEPOSIT_DISPLAY_TEMPLATE = (
     embeds: [
       new EmbedBuilder()
         .setDescription(
-          `${title}\n\n[⛓️ transaction](${getExplorerUrl({hash: transactionEvent.hash})}) [📄 liquid staking](https://docs.gogopool.com/liquid-staking/how-liquid-staking-works) ${liquidStakerDisplay(
+          `${title}\n\n[⛓️ transaction](${getExplorerUrl({
+            hash: transactionEvent.hash,
+          })}) [📄 liquid staking](https://docs.gogopool.com/liquid-staking/how-liquid-staking-works) ${liquidStakerDisplay(
             transactionEvent.from
           )}`
         )
@@ -779,7 +786,9 @@ export const GGAVAX_WITHDRAW_DISPLAY_TEMPLATE = (
     embeds: [
       new EmbedBuilder()
         .setDescription(
-          `${title}\n\n[⛓️ transaction](${getExplorerUrl({hash: transactionEvent.hash})}) [📄 liquid staking](https://docs.gogopool.com/liquid-staking/how-liquid-staking-works) ${liquidStakerDisplay(
+          `${title}\n\n[⛓️ transaction](${getExplorerUrl({
+            hash: transactionEvent.hash,
+          })}) [📄 liquid staking](https://docs.gogopool.com/liquid-staking/how-liquid-staking-works) ${liquidStakerDisplay(
             transactionEvent.from
           )}`
         )
@@ -800,7 +809,9 @@ export const XGGP_DEPOSIT_DISPLAY_TEMPLATE = (
     embeds: [
       new EmbedBuilder()
         .setDescription(
-          `${title}\n\n[⛓️ transaction](${getExplorerUrl({hash: transactionEvent.hash})}) [📄 vault deposit](https://docs.seafi.app/overview/depositors) ${liquidStakerDisplay(
+          `${title}\n\n[⛓️ transaction](${getExplorerUrl({
+            hash: transactionEvent.hash,
+          })}) [📄 vault deposit](https://docs.seafi.app/overview/depositors) ${liquidStakerDisplay(
             transactionEvent.from
           )}`
         )
@@ -821,7 +832,9 @@ export const XGGP_WITHDRAW_DISPLAY_TEMPLATE = (
     embeds: [
       new EmbedBuilder()
         .setDescription(
-          `${title}\n\n[⛓️ transaction](${getExplorerUrl({hash: transactionEvent.hash})}) [📄 vault withdraw](https://docs.seafi.app/overview/depositors) ${liquidStakerDisplay(
+          `${title}\n\n[⛓️ transaction](${getExplorerUrl({
+            hash: transactionEvent.hash,
+          })}) [📄 vault withdraw](https://docs.seafi.app/overview/depositors) ${liquidStakerDisplay(
             transactionEvent.from
           )}`
         )
@@ -845,7 +858,7 @@ export const XGGP_TARGET_APR_UPDATED_TEMPLATE = (
   targetAprBasisPoints: bigint
 ) => {
   // 28 days cycles means 13 cycles per year
-  const apr = targetAprBasisPoints * 13n / 10000n;
+  const apr = (targetAprBasisPoints * 13n) / 10000n;
   return {
     embeds: [
       new EmbedBuilder()
@@ -1027,7 +1040,7 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
         emoji: true,
         text: ":snowman: Transaction",
       },
-      url: getExplorerUrl({network, hash: transactionHash}),
+      url: getExplorerUrl({ network, hash: transactionHash }),
       action_id: "transaction-hash-link",
     },
     {
@@ -1037,7 +1050,7 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
         emoji: true,
         text: ":snowman: Owner",
       },
-      url: getExplorerUrl({network, address: owner}),
+      url: getExplorerUrl({ network, address: owner }),
       action_id: "owner-link",
     },
     {
@@ -1047,7 +1060,7 @@ export const SLACK_STREAMLINED_MINIPOOL_LAUNCH_TEMPLATE = async ({
         emoji: true,
         text: ":closed_umbrella: Validator",
       },
-      url: getAvascanUrl({network, nodeID}),
+      url: getAvascanUrl({ network, nodeID }),
       action_id: "node-id-link",
     },
   ];
@@ -1139,9 +1152,9 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
       ? ":female-construction-worker::computer: Hardware Rented (Testnet)"
       : ":computer: Hardware Rented";
   const displayDuration = Math.floor(parseInt(duration) / 86400);
-  
+
   // Create a section for each node ID
-  const nodeIDSections = nodeIDs.map(nodeID => ({
+  const nodeIDSections = nodeIDs.map((nodeID) => ({
     type: "section",
     text: {
       type: "mrkdwn",
@@ -1194,7 +1207,7 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
               emoji: true,
               text: ":snowman: Transaction",
             },
-            url: getExplorerUrl({network, hash: transactionHash}),
+            url: getExplorerUrl({ network, hash: transactionHash }),
             action_id: "transaction-hash-link",
           },
           {
@@ -1204,7 +1217,7 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
               emoji: true,
               text: ":bust_in_silhouette: User",
             },
-            url: getExplorerUrl({network, address: user}),
+            url: getExplorerUrl({ network, address: user }),
             action_id: "user-link",
           },
         ],
@@ -1215,6 +1228,115 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
         text: {
           type: "mrkdwn",
           text: `*Hardware Provider:* Artifact`,
+        },
+      },
+    ],
+  };
+};
+
+export const SLACK_COQNET_HARDWARE_RENTED_TEMPLATE = async ({
+  network,
+  transactionHash,
+  user,
+  nodeIDs,
+  duration,
+  payment,
+  hardwareProviderName,
+  subnetName,
+}: {
+  network?: Network;
+  transactionHash: string;
+  user: string;
+  nodeIDs: string[];
+  hardwareProviderName?: string;
+  duration: string;
+  payment: string;
+  subnetID: string;
+  subnetName?: string;
+}) => {
+  const headerText =
+    network === Network.FUJI
+      ? `:female-construction-worker::hatching_chick: ${hardwareProviderName} Hardware Rented (Testnet)`
+      : `:hatching_chick: ${hardwareProviderName} Hardware Rented`;
+  const displayDuration = Math.floor(parseInt(duration) / 86400);
+
+  return {
+    blocks: [
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: headerText,
+          emoji: true,
+        },
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `*Duration:* ${displayDuration} days`,
+          },
+          {
+            type: "mrkdwn",
+            text: "|",
+          },
+          {
+            type: "mrkdwn",
+            text: `*Payment:* ${
+              !isNaN(Number(payment))
+                ? Number(payment).toLocaleString(undefined, {
+                    maximumFractionDigits: 3,
+                  })
+                : "0"
+            } AVAX`,
+          },
+        ],
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":snowman: Transaction",
+            },
+            url: getExplorerUrl({ network, hash: transactionHash }),
+            action_id: "transaction-hash-link",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              emoji: true,
+              text: ":bust_in_silhouette: User",
+            },
+            url: getExplorerUrl({ network, address: user }),
+            action_id: "user-link",
+          },
+        ],
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Node ID:* \`${nodeIDs[0]}\``,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Hardware Provider:* ${hardwareProviderName}`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Subnet:* ${subnetName}`,
         },
       },
     ],
@@ -1257,7 +1379,7 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
               emoji: true,
               text: ":snowman: Transaction",
             },
-            url: getExplorerUrl({network, hash: transactionHash}),
+            url: getExplorerUrl({ network, hash: transactionHash }),
             action_id: "transaction-hash-link",
           },
           {
@@ -1267,7 +1389,7 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
               emoji: true,
               text: ":bust_in_silhouette: Owner",
             },
-            url: getExplorerUrl({network, address: owner}),
+            url: getExplorerUrl({ network, address: owner }),
             action_id: "owner-link",
           },
           {
@@ -1277,7 +1399,7 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
               emoji: true,
               text: ":closed_umbrella: Validator",
             },
-            url: getAvascanUrl({network, nodeID}),
+            url: getAvascanUrl({ network, nodeID }),
             action_id: "node-id-link",
           },
         ],
@@ -1374,4 +1496,3 @@ export const SLACK_UNDERCOLLATERALIZED_TEMPLATE = async ({
     ],
   };
 };
-
