@@ -58,6 +58,12 @@ actions:
                     address: 0x5897481CB0C9b0C9101aA7764E2B72cC61F12F89
                   name: HardwareRented
                 status: success
+              - network: 43114
+                eventEmitted:
+                  contract:
+                    address: 0x7a212fB6b84461CF4f889caB42Ff9E856dB9a6dC
+                  name: HardwareRented
+                status: success
             status:
               - mined
       minipoolFuji:
