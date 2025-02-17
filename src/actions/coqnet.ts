@@ -45,6 +45,14 @@ export const HARDWARE_PROVIDER_MAP = [
     mainnetUrl:
       "https://hooks.slack.com/services/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",
   },
+  {
+    name: "GoGoPool",
+    id: "0x2797e64cefb2c97b8db530c89fd2afd138fba588daee473b454803f2bc71b133",
+    fujiUrl:
+      "https://hooks.slack.com/services/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",
+    mainnetUrl:
+      "https://hooks.slack.com/services/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",
+  },
 ];
 const getSlackUrl = (
   hardwareProvider: string,
