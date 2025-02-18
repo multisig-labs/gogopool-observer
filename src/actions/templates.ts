@@ -1289,7 +1289,7 @@ export const SLACK_COQNET_HARDWARE_RENTED_TEMPLATE = async ({
                     maximumFractionDigits: 3,
                   })
                 : "0"
-            } AVAX`,
+            } GGP`,
           },
         ],
       },
