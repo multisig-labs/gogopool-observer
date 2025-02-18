@@ -1158,7 +1158,7 @@ export const SLACK_HARDWARE_RENTED_TEMPLATE = async ({
     type: "section",
     text: {
       type: "mrkdwn",
-      text: `*Node ID:* \`${nodeID}\``,
+      text: `*GoGoPool Node ID:* \`${nodeID}\``,
     },
   }));
 
@@ -1322,7 +1322,7 @@ export const SLACK_COQNET_HARDWARE_RENTED_TEMPLATE = async ({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Node ID:* \`${nodeIDs[0]}\``,
+          text: `*Coqnet Node ID:* \`${nodeIDs[0]}\``,
         },
       },
       {
@@ -1408,7 +1408,7 @@ export const SLACK_MINIPOOL_LAUNCHED_TEMPLATE = async ({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Node ID:* \`${nodeID}\``,
+          text: `*GoGoPool Node ID:* \`${nodeID}\``,
         },
       },
       {
@@ -1483,7 +1483,7 @@ export const SLACK_UNDERCOLLATERALIZED_TEMPLATE = async ({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Node ID:* \`${nodeID}\``,
+          text: `*GoGoPool Node ID:* \`${nodeID}\``,
         },
       },
       {
