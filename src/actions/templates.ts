@@ -1329,13 +1329,6 @@ export const SLACK_COQNET_HARDWARE_RENTED_TEMPLATE = async ({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*Hardware Provider:* ${hardwareProviderName}`,
-        },
-      },
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
           text: `*Subnet:* ${subnetName}`,
         },
       },
