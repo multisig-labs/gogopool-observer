@@ -1256,8 +1256,8 @@ export const SLACK_COQNET_HARDWARE_RENTED_TEMPLATE = async ({
 }) => {
   const headerText =
     network === Network.FUJI
-      ? `:female-construction-worker::hatching_chick: ${hardwareProviderName} Hardware Rented (Testnet)`
-      : `:hatching_chick: ${hardwareProviderName} Hardware Rented`;
+      ? `:female-construction-worker::hatching_chick: Coqnet Hardware Rented (Testnet)`
+      : `:hatching_chick: Coqnet Hardware Rented`;
   const displayDuration = Math.floor(parseInt(duration) / 86400);
 
   return {
@@ -1330,6 +1330,13 @@ export const SLACK_COQNET_HARDWARE_RENTED_TEMPLATE = async ({
         text: {
           type: "mrkdwn",
           text: `*Subnet:* ${subnetName}`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Hardware Provider:* ${hardwareProviderName}`,
         },
       },
     ],
