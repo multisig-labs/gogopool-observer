@@ -8,8 +8,12 @@ import { initServices, nodeHexToID } from "./utils";
 
 const SUBNET_ID_MAP = [
   {
-    name: "CoqNet",
+    name: "CoqNetFuji",
     hex: "0x080fa7727ac2b73292de264684f469732687b61977ae5e95d79727a2e8dd7c54",
+  },
+  {
+    name: "Coqnet",
+    hex: "0x0ad6355dc6b82cd375e3914badb3e2f8d907d0856f8e679b2db46f8938a2f012",
   },
   {
     name: "Avalanche",
