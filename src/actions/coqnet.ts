@@ -79,10 +79,10 @@ export const HARDWARE_PROVIDER_MAP = [
     mainnetUrlSecretName: "COQNET_PROVIROLL_MAINNET_URL",
   },
   {
-    name: "Jared",
+    name: "stevenm",
     id: "0xf52e492a0e83cbaccf712377915f15d9af0a6fd61a3b77ce6a1faf6dfc5a95ad",
-    fujiUrlSecretName: "COQNET_JARRED_FUJI_URL",
-    mainnetUrlSecretName: "COQNET_JARRED_MAINNET_URL",
+    fujiUrlSecretName: "COQNET_STEVENM_FUJI_URL",
+    mainnetUrlSecretName: "COQNET_STEVENM_MAINNET_URL",
   },
   {
     name: "D6cGto6RZnJ",
@@ -180,6 +180,12 @@ export const HARDWARE_PROVIDER_MAP = [
     fujiUrlSecretName: "COQNET_SANGHREN_FUJI_URL",
     mainnetUrlSecretName: "COQNET_SANGHREN_MAINNET_URL",
   },
+  {
+    name: "Altostake",
+    id: "0xd6405f4d82562e941b7ca0607616420a9b235dc941a3897cf1cffc71d8770ef2",
+    fujiUrlSecretName: "COQNET_ALTOSTAKE_FUJI_URL",
+    mainnetUrlSecretName: "COQNET_ALTOSTAKE_MAINNET_URL",
+  },
 ] as const;
 
 const getSlackUrl = async (
@@ -187,17 +193,29 @@ const getSlackUrl = async (
   network: Network = Network.MAINNET,
   context: Context
 ) => {
-  const slackUrl = HARDWARE_PROVIDER_MAP.find(
+  const foundHardwareProvider = HARDWARE_PROVIDER_MAP.find(
     ({ id }) => id.toLowerCase() === hardwareProvider.toLowerCase()
   );
-  if (!slackUrl) {
+  if (!foundHardwareProvider) {
+    console.error(
+      `No hardware provider found for: ${hardwareProvider} on network: ${network}`
+    );
     return network === Network.FUJI
       ? await context.secrets.get(CATCHALL_FUJI_URL_NAME)
       : await context.secrets.get(CATCHALL_MAINNET_URL_NAME);
   }
-  return network === Network.FUJI
-    ? await context.secrets.get(slackUrl.fujiUrlSecretName)
-    : await context.secrets.get(slackUrl.mainnetUrlSecretName);
+  try {
+    return network === Network.FUJI
+      ? await context.secrets.get(foundHardwareProvider.fujiUrlSecretName)
+      : await context.secrets.get(foundHardwareProvider.mainnetUrlSecretName);
+  } catch (error) {
+    console.error(
+      `Error getting Slack URL for: ${hardwareProvider} on network: ${network} foundHardwareProvider.mainnetUrlSecretName: ${foundHardwareProvider.mainnetUrlSecretName} foundHardwareProvider.fujiUrlSecretName: ${foundHardwareProvider.fujiUrlSecretName}`
+    );
+    return network === Network.FUJI
+      ? await context.secrets.get(CATCHALL_FUJI_URL_NAME)
+      : await context.secrets.get(CATCHALL_MAINNET_URL_NAME);
+  }
 };
 
 const handleCoqnetHardwareRentedEvents = async (
@@ -233,15 +251,6 @@ const handleCoqnetHardwareRentedEvents = async (
     network,
     context
   );
-
-  if (!slackUrl) {
-    throw new Error(
-      "No Slack URL found for hardware provider: " +
-        event.hardwareProviderName +
-        " on network: " +
-        network
-    );
-  }
 
   await emitter.emit(
     undefined,
