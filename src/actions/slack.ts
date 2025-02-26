@@ -25,7 +25,7 @@ export class SlackClient extends Client {
         await webhook.send(slackMessage);
         console.log("sendMessage", "Message sent successfully");
       } catch (error) {
-        console.error("Error sending message", error);
+        throw new Error("Error sending message to slack");
       }
     }
   }
