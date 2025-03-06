@@ -40,6 +40,12 @@ actions:
               - network: 43114
                 eventEmitted:
                   contract:
+                    address: 0xf451171872e9395021316e44D9f5475C90e27848
+                  name: HardwareRented
+                status: success
+              - network: 43114
+                eventEmitted:
+                  contract:
                     address: 0xC095ece2C0f315381b4BF6De169FbC219B24194C
                   name: HardwareRented
                 status: success
