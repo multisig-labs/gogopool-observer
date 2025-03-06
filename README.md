@@ -31,7 +31,8 @@ npm i
 2. Verify the contract on Tenderly `GoGoPool-Testnet` project.
    - https://dashboard.tenderly.co/multisiglabs/gogopool/contracts
    - Add the contract without giving it a name
-   - Verify the contract via ABI upload, if it's a proxy use the proxy abi
+   - Verify the proxy contract via ABI upload in the Tenderly UI using the TransparentUpgradeableProxy ABI
+   - And verify the implementation contract in the Tenderly UI using the implementation ABI
 
 ## Testing
 
