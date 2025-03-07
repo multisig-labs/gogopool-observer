@@ -148,6 +148,7 @@ export const initServices = async (context: Context) => {
   discordClient.init(
     await context.secrets.get(DISCORD_WEBHOOK_URL_SECRET_NAME)
   );
+  // send to discord if `message` included in emit
   emitter.addClient(discordClient);
   console.log(context.metadata.getNetwork());
   webhookClient.init(
@@ -155,9 +156,12 @@ export const initServices = async (context: Context) => {
       ? await context.secrets.get(WEBHOOK_URL_FUJI_SECRET_NAME)
       : await context.secrets.get(WEBHOOK_URL_SECRET_NAME)
   );
-  emitter.addClient(webhookClient);//
+  // send to webhook if `body` included in emit
+  emitter.addClient(webhookClient);
   knockClient.init(await context.secrets.get(KNOCK_TOKEN_SECRET_NAME));
+  // send to knock if `workflowData` included in emit
   emitter.addClient(knockClient);
+  // send to slack if `slackMessage` included in emit
   emitter.addClient(slackClient);
 };
 

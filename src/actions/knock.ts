@@ -2,6 +2,7 @@ import { Client } from "./emitter";
 import { Knock } from "@knocklabs/node";
 import { Network } from "@tenderly/actions";
 import { WebhookMessageCreateOptions } from "discord.js";
+import { isDev } from "./constants";
 
 export class KnockClient extends Client {
   _knockClient: Knock | null;
@@ -41,6 +42,15 @@ export class KnockClient extends Client {
           : "new-oneclick-minipool";
       if (workflowData.workflowKey) {
         workflowKey = workflowData.workflowKey;
+      }
+      // for dev, we don't want our tests triggering knock
+      if (isDev) {
+        console.log({
+          message: "Skipping knock trigger in development, would have sent",
+          workflowKey,
+          workflowData,
+        });
+        return;
       }
       await this._knockClient.workflows.trigger(workflowKey, {
         recipients: [

@@ -1,5 +1,6 @@
 import { WebhookClient, WebhookMessageCreateOptions } from "discord.js";
 import { Client } from "./emitter";
+import { isDev } from "./constants";
 
 export class DiscordWebhookClient extends Client {
   _webhookClient: WebhookClient | null;
@@ -22,6 +23,10 @@ export class DiscordWebhookClient extends Client {
     if (!this._webhookClient) {
       throw new Error("Webhook client not initialized");
     } else if (message) {
+      if (isDev) {
+        console.log("Skipping discord message in development");
+        return;
+      }
       await this._webhookClient.send(message);
     }
   }

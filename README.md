@@ -36,36 +36,16 @@ npm i
 
 ## Testing
 
-Testing is handled with Vitest and sets the environment to be development. This is so Discord isn't spammed during testing.
+Testing is handled with Vitest. Since some of these tests use real data, they will not be emit by default. Emitting therefore will be OPT-IN - that is, you must disable the emitter being tested. This can be safely done if using something like `only` for a test, so no other tests are run. The only one this effects now is the artifact channel that is sent to Knock at the moment.
 
 ```bash
 # Start vitest in visual mode. How exciting!
 npm run test
 ```
 
-The tests use a payload in the aptly named `payload` folder which contains a single transaction receipt. The tests basically mock having that event triggered and how to respond. The functions are designed to "throw" if the event shouldn't have been responded to. Maybe this was a bad decision. But they early exit which is fun.
+The tests use a payload in the aptly named `payload` folder which contains a single transaction receipt. The tests basically mock having that event triggered and how to respond. The functions are designed to "throw" if the event shouldn't have been responded to. This is to make it let Tenderly handle the errors, emailing team members to the problem, and being visible errors on the dashboard.
 
 I have this in BetterTouchTool set to a hotkey to get the tx receipt. Could use `cast receipt <tx> --rpc-url https://api.avax.network/ext/bc/C/rpc` as well.
-
-```javascript
-async (clipboardContentString) => {
-  try {
-    return JSON.stringify(
-      (
-        await (
-          await fetch("https://api.avax.network/ext/bc/C/rpc", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: `{"jsonrpc":"2.0","method":"eth_getTransactionReceipt","params":["${clipboardContentString}"],"id":67}`,
-          })
-        ).json()
-      ).result,
-    );
-  } catch (error) {
-    return "Error";
-  }
-};
-```
 
 ## Deployment
 
